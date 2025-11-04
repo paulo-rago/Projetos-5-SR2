@@ -1,0 +1,15 @@
+# Dependencias principais (obrigatorias)
+pandas>=1.5.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+
+# Streamlit e visualizacoes
+streamlit>=1.28.0
+plotly>=5.17.0
+statsmodels>=0.14.0
+
+# Dependencias opcionais (para funcionalidade de mapas)
+pyproj>=3.7.0
+folium>=0.20.0
+streamlit-folium>=0.25.0
+

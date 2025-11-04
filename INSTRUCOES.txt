@@ -1,0 +1,163 @@
+================================================================================
+INSTRUCOES PARA EXECUTAR O PROJETO - CENSO ARBOREO DE RECIFE
+================================================================================
+
+1. PREPARACAO DO AMBIENTE
+================================================================================
+
+1.1. Criar ambiente virtual (se ainda nao foi criado):
+    python3 -m venv venv
+
+1.2. Ativar o ambiente virtual:
+    source venv/bin/activate
+    
+    (No Windows: venv\Scripts\activate)
+
+1.3. Instalar dependencias:
+    pip install -r requirements.txt
+
+
+2. EXECUTAR SCRIPT DE LIMPEZA DOS DADOS
+================================================================================
+
+2.1. Certifique-se de que o arquivo 'censo_arboreo_final.csv' esta no diretorio
+     do projeto.
+
+2.2. Execute o script de limpeza:
+    python "cópia_de_verdefica_limpeza_dos_dados.py"
+
+2.3. O script ira gerar os seguintes arquivos CSV:
+    - censo_arboreo_padronizado.csv
+    - censo_arboreo_padronizado_temporal.csv
+    - censo_arboreo_padronizado_temporal_extremo.csv
+    - censo_arboreo_padronizado_temporal_geografico.csv (arquivo final)
+
+2.4. O script pode demorar alguns minutos dependendo do tamanho do dataset.
+     Aguarde a conclusao completa.
+
+
+3. EXECUTAR DASHBOARD STREAMLIT
+================================================================================
+
+3.1. Certifique-se de que o arquivo 'censo_arboreo_final.csv' esta no diretorio
+     (o dashboard usa este arquivo diretamente).
+
+3.2. Com o ambiente virtual ativado, execute:
+    streamlit run app.py
+
+3.3. O dashboard abrira automaticamente no navegador em:
+    http://localhost:8501
+
+3.4. Funcionalidades do dashboard:
+    - Filtros por RPA, Bairro, Estado Fitossanitario e Especie
+    - Visao Geral: distribuicoes e estatisticas gerais
+    - Mapa Interativo: visualizacao geografica (Plotly e Folium)
+    - Analises Estatisticas: altura, DAP, copa e relacoes entre variaveis
+    - Especies: top 20 especies e analise detalhada por especie
+    - Analise Temporal: plantios e monitoramentos ao longo do tempo
+
+
+4. ARQUIVOS NECESSARIOS
+================================================================================
+
+4.1. Arquivo de entrada obrigatorio:
+    - censo_arboreo_final.csv (deve estar no diretorio do projeto)
+
+4.2. Arquivos gerados pelo script de limpeza:
+    - censo_arboreo_padronizado.csv
+    - censo_arboreo_padronizado_temporal.csv
+    - censo_arboreo_padronizado_temporal_extremo.csv
+    - censo_arboreo_padronizado_temporal_geografico.csv
+    - mapa_coordenadas.png (mapa de coordenadas)
+
+4.3. Arquivos do projeto:
+    - app.py (dashboard Streamlit)
+    - copia_de_verdefica_limpeza_dos_dados.py (script de limpeza)
+    - requirements.txt (dependencias)
+
+
+5. DEPENDENCIAS PRINCIPAIS
+================================================================================
+
+- pandas>=1.5.0
+- numpy>=1.21.0
+- matplotlib>=3.5.0
+- streamlit>=1.28.0
+- plotly>=5.17.0
+- statsmodels>=0.14.0
+- pyproj>=3.7.0
+- folium>=0.20.0
+- streamlit-folium>=0.25.0
+
+
+6. SOLUCAO DE PROBLEMAS
+================================================================================
+
+6.1. Se o script de limpeza falhar:
+    - Verifique se o arquivo censo_arboreo_final.csv existe
+    - Verifique se tem espaco em disco suficiente
+    - Verifique se todas as dependencias estao instaladas
+
+6.2. Se o dashboard Streamlit nao abrir:
+    - Verifique se o ambiente virtual esta ativado
+    - Verifique se todas as dependencias estao instaladas
+    - Verifique se o arquivo censo_arboreo_final.csv existe
+    - Tente executar: streamlit run app.py --server.port 8502
+
+6.3. Se o mapa Plotly nao funcionar:
+    - O mapa Plotly usa open-street-map que nao requer token
+    - Se houver problemas, use o mapa Folium na aba "Mapa Folium"
+
+6.4. Se o mapa Folium nao funcionar:
+    - Verifique se pyproj e folium estao instalados
+    - Execute: pip install pyproj folium streamlit-folium
+
+
+7. ESTRUTURA DE DIRETORIOS
+================================================================================
+
+Projetos 5 - SR2/
+├── app.py
+├── copia_de_verdefica_limpeza_dos_dados.py
+├── requirements.txt
+├── INSTRUCOES.txt (este arquivo)
+├── censo_arboreo_final.csv (arquivo de entrada)
+├── venv/ (ambiente virtual)
+└── [arquivos CSV gerados pelo script]
+
+
+8. NOTAS IMPORTANTES
+================================================================================
+
+- O script de limpeza pode demorar alguns minutos para processar ~259k registros
+- O dashboard usa cache para melhor performance ao recarregar dados
+- Os mapas estao limitados a 10.000 pontos (Plotly) e 50.000 pontos (Folium)
+  para melhor performance
+- Certifique-se de ter pelo menos 500MB de espaco livre em disco
+
+
+9. COMANDOS RAPIDOS
+================================================================================
+
+# Criar ambiente virtual
+python3 -m venv venv
+
+# Ativar ambiente virtual
+source venv/bin/activate
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Executar script de limpeza
+python "cópia_de_verdefica_limpeza_dos_dados.py"
+
+# Executar dashboard
+streamlit run app.py
+
+# Desativar ambiente virtual (quando terminar)
+deactivate
+
+================================================================================
+FIM DAS INSTRUCOES
+================================================================================
+

@@ -1,0 +1,22 @@
+# Python (Padrão)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambientes Virtuais
+venv/
+env/
+.venv/
+.env
+.env.*
+
+# IDE (Configurações do editor)
+.vscode/
+.idea/
+
+# Dash / Flask (Segurança e Logs)
+instance/
+.webassets-cache
+errors.log
+debug.log

@@ -1,15 +1,23 @@
-# Dependencias principais (obrigatorias)
+# VERDEFICA - DASH VERSION
+# Requirements para app Dash
+
+# Core Dash
+dash>=2.14.0
+dash-bootstrap-components>=1.5.0
+
+# Data manipulation
 pandas>=1.5.0
 numpy>=1.21.0
-matplotlib>=3.5.0
 
-# Streamlit e visualizacoes
-streamlit>=1.28.0
+# Visualizações
 plotly>=5.17.0
-statsmodels>=0.14.0
 
-# Dependencias opcionais (para funcionalidade de mapas)
+# Mapas e coordenadas
 pyproj>=3.7.0
-folium>=0.20.0
-streamlit-folium>=0.25.0
+folium>=0.14.0
 
+# Server (para deploy)
+gunicorn>=21.2.0
+
+# Optional: melhor performance
+flask-caching>=2.1.0

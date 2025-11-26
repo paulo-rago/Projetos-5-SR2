@@ -11,6 +11,7 @@ import folium
 from folium.plugins import HeatMap, MarkerCluster
 from pyproj import Transformer
 import numpy as np
+import re
 
 # ============================================
 # INICIALIZAR APP
@@ -365,6 +366,7 @@ app.layout = html.Div([
             dcc.Tab(label='Análise Estatística', value='analise'),
             dcc.Tab(label='Mapa', value='mapa'),
             dcc.Tab(label='Seletor de Espécies', value='especies'),
+            dcc.Tab(label='Análises do Notebook', value='notebook'),
         ]),
         
         html.Div(id='tab-content', style={'marginTop': '2rem', 'marginBottom': '4rem'}),
@@ -397,6 +399,8 @@ def render_content(tab):
         return render_mapa()
     elif tab == 'especies':
         return render_especies()
+    elif tab == 'notebook':
+        return render_notebook()
     else:
         return dbc.Alert("🚧 Em desenvolvimento...", color="info")
 
@@ -799,6 +803,266 @@ def limpar_filtros(n_clicks):
 
 def render_analise(): return html.Div([html.H3("📈 Análise Estatística"), dbc.Alert("🚧 Em desenvolvimento...", color="info")])
 def render_especies(): return html.Div([html.H3("Seletor de Espécies"), dbc.Alert("🚧 Em desenvolvimento...", color="info")])
+
+# ============================================
+# FUNÇÃO PARA GERAR DESCRIÇÃO DO GRÁFICO
+# ============================================
+
+def gerar_descricao_grafico(codigo, titulo_markdown, num_axes):
+    """Gera uma descrição descritiva sobre o que o gráfico mostra"""
+    
+    descricao = "Este gráfico evidencia "
+    
+    # Palavras-chave para identificar tipos de análise
+    if 'hist' in codigo or 'histogram' in codigo:
+        if 'altura' in codigo:
+            descricao += "a distribuição das alturas das árvores no Recife"
+        elif 'dap' in codigo:
+            descricao += "a distribuição do DAP (diâmetro à altura do peito) das árvores"
+        elif 'copa' in codigo:
+            descricao += "a distribuição do tamanho das copas das árvores"
+        elif 'rpa' in codigo:
+            descricao += "a distribuição das árvores por RPA (Região Político-Administrativa)"
+        else:
+            descricao += "a distribuição de uma característica das árvores no Recife"
+    
+    elif 'bar' in codigo or 'barplot' in codigo:
+        if 'especie' in codigo or 'nome_popular' in codigo:
+            descricao += "a quantidade de árvores por espécie no Recife"
+        elif 'rpa' in codigo:
+            descricao += "a quantidade de árvores por RPA no Recife"
+        elif 'bairro' in codigo:
+            descricao += "a quantidade de árvores por bairro no Recife"
+        else:
+            descricao += "a comparação de quantidades entre diferentes categorias"
+    
+    elif 'pie' in codigo or 'pizza' in codigo:
+        if 'especie' in codigo or 'nome_popular' in codigo:
+            descricao += "a proporção de árvores por espécie no Recife"
+        elif 'rpa' in codigo:
+            descricao += "a proporção de árvores por RPA no Recife"
+        else:
+            descricao += "a proporção de distribuição de árvores por categoria"
+    
+    elif 'scatter' in codigo or 'scatterplot' in codigo:
+        if 'altura' in codigo and 'dap' in codigo:
+            descricao += "a relação entre altura e DAP das árvores"
+        else:
+            descricao += "a relação entre duas variáveis das árvores"
+    
+    elif 'box' in codigo or 'boxplot' in codigo:
+        descricao += "a distribuição e variabilidade de características das árvores"
+    
+    elif 'heatmap' in codigo or 'heat map' in codigo:
+        descricao += "a concentração e distribuição espacial das árvores no Recife"
+    
+    elif num_axes > 3:
+        descricao += "múltiplas análises estatísticas sobre diferentes características das árvores no Recife"
+    
+    elif 'distribu' in codigo or 'distribuição' in codigo:
+        descricao += "a distribuição espacial ou estatística das árvores no Recife"
+    
+    elif 'fitossanid' in codigo or 'saude' in codigo or 'condicao' in codigo:
+        descricao += "a condição fitossanitária das árvores no Recife"
+    
+    elif 'especie' in codigo or 'nome_popular' in codigo:
+        descricao += "informações sobre as espécies de árvores no Recife"
+    
+    elif 'rpa' in codigo:
+        descricao += "a distribuição das árvores por RPA no Recife"
+    
+    elif titulo_markdown:
+        # Usa o título markdown se disponível
+        descricao = f"Este gráfico evidencia {titulo_markdown.lower()}"
+    
+    else:
+        descricao += "características e padrões das árvores no Recife"
+    
+    return descricao
+
+# ============================================
+# FUNÇÃO PARA EXTRAIR IMAGENS DO NOTEBOOK
+# ============================================
+
+def extrair_imagens_notebook():
+    """Extrai todas as imagens PNG dos outputs do notebook junto com descrições"""
+    notebook_path = Path("notebook/Verdefica_Unificado_12nov2025.ipynb")
+    imagens = []
+    
+    if not notebook_path.exists():
+        return imagens
+    
+    try:
+        with open(notebook_path, 'r', encoding='utf-8') as f:
+            nb = json.load(f)
+        
+        cells = nb.get('cells', [])
+        
+        for cell_idx, cell in enumerate(cells):
+            if cell.get('cell_type') == 'code':
+                outputs = cell.get('outputs', [])
+                
+                # Analisa o código da célula para entender o que o gráfico mostra
+                source_code = cell.get('source', [])
+                if isinstance(source_code, list):
+                    codigo_completo = ''.join(source_code).lower()
+                else:
+                    codigo_completo = str(source_code).lower()
+                
+                # Busca títulos/descrições em células markdown anteriores
+                titulo_markdown = None
+                for i in range(max(0, cell_idx - 3), cell_idx):
+                    prev_cell = cells[i]
+                    if prev_cell.get('cell_type') == 'markdown':
+                        source = prev_cell.get('source', [])
+                        if isinstance(source, list):
+                            texto = ''.join(source).strip()
+                        else:
+                            texto = str(source).strip()
+                        # Remove formatação markdown
+                        texto_limpo = texto.replace('**', '').replace('##', '').replace('#', '').strip()
+                        # Pega títulos de seção (geralmente mais descritivos)
+                        if len(texto_limpo) > 10 and len(texto_limpo) < 100:
+                            titulo_markdown = texto_limpo
+                            break
+                
+                for output_idx, output in enumerate(outputs):
+                    if output.get('output_type') == 'display_data':
+                        data = output.get('data', {})
+                        if 'image/png' in data:
+                            img_data = data['image/png']
+                            
+                            # Pega o texto/plain para detectar múltiplos eixos
+                            titulo = None
+                            num_axes = 1
+                            if 'text/plain' in data:
+                                text_plain = data['text/plain']
+                                if isinstance(text_plain, list) and len(text_plain) > 0:
+                                    titulo = text_plain[0]
+                                    # Detecta múltiplos eixos: "with X Axes"
+                                    match = re.search(r'with (\d+) Axes?', titulo)
+                                    if match:
+                                        num_axes = int(match.group(1))
+                            
+                            # Gera descrição baseada no código e contexto
+                            descricao = gerar_descricao_grafico(codigo_completo, titulo_markdown, num_axes)
+                            
+                            imagens.append({
+                                'imagem': img_data,
+                                'titulo': titulo or f'Gráfico {len(imagens) + 1}',
+                                'descricao': descricao,
+                                'num_axes': num_axes,
+                                'cell_idx': cell_idx,
+                                'output_idx': output_idx
+                            })
+    except Exception as e:
+        print(f"⚠️ Erro ao ler notebook: {e}")
+    
+    return imagens
+
+# ============================================
+# FUNÇÃO DE RENDERIZAÇÃO DO NOTEBOOK
+# ============================================
+
+def render_notebook():
+    """Renderiza a seção com os resultados do notebook"""
+    imagens = extrair_imagens_notebook()
+    
+    if not imagens:
+        return html.Div([
+            html.H3("📓 Análises do Notebook", className="mb-4"),
+            dbc.Alert([
+                html.I(className="fas fa-info-circle me-2"),
+                "Nenhuma imagem encontrada no notebook. Verifique se o arquivo existe e contém outputs de gráficos."
+            ], color="info")
+        ])
+    
+    card_style = {
+        'height': '100%',
+        'borderRadius': '12px',
+        'border': f'1px solid {COLORS["border"]}',
+        'boxShadow': '0 1px 3px rgba(0,0,0,0.08)',
+        'transition': 'transform 0.2s, box-shadow 0.2s',
+        'overflow': 'hidden'
+    }
+    
+    cards = []
+    for idx, img_info in enumerate(imagens):
+        img_base64 = img_info['imagem']
+        titulo = img_info['titulo']
+        descricao = img_info.get('descricao')
+        num_axes = img_info.get('num_axes', 1)
+        
+        # Limpa o título removendo tags HTML e caracteres especiais
+        titulo_limpo = titulo.replace('<Figure size ', '').replace(' with ', ' - ').replace(' Axes>', ' eixos').replace(' Axe>', ' eixo').replace('>', '')
+        if titulo_limpo.startswith('<'):
+            titulo_limpo = f"Visualização {idx + 1}"
+        
+        # Gráficos com múltiplos eixos (subplots) ocupam largura total
+        # Se tiver mais de 1 eixo, usa largura total (12), senão usa metade (6)
+        col_width = 12 if num_axes > 1 else 6
+        
+        # Ajusta altura máxima baseado no número de eixos
+        max_height = '1000px' if num_axes > 3 else ('900px' if num_axes > 1 else '600px')
+        
+        # Conteúdo do card
+        card_content = []
+        
+        # Header com título
+        card_content.append(
+            dbc.CardHeader([
+                html.H6(titulo_limpo, className="m-0", style={'fontWeight': '600', 'fontSize': '0.95rem'})
+            ], style={'background': 'white', 'borderBottom': f'1px solid {COLORS["border"]}', 'padding': '1rem'})
+        )
+        
+        # Descrição (sempre exibida, pois sempre é gerada)
+        descricao_limpa = descricao.replace('**', '').replace('##', '').replace('#', '').strip() if descricao else "Este gráfico evidencia características das árvores no Recife"
+        card_content.append(
+            dbc.CardBody([
+                html.P(
+                    descricao_limpa,
+                    style={
+                        'color': COLORS['gray'],
+                        'fontSize': '0.9rem',
+                        'lineHeight': '1.6',
+                        'marginBottom': '1rem',
+                        'fontStyle': 'italic'
+                    }
+                )
+            ], style={'padding': '1rem 1.5rem 0.5rem 1.5rem'})
+        )
+        
+        # Imagem
+        card_content.append(
+            dbc.CardBody([
+                html.Img(
+                    src=f"data:image/png;base64,{img_base64}",
+                    style={
+                        'width': '100%',
+                        'height': 'auto',
+                        'objectFit': 'contain',
+                        'borderRadius': '8px',
+                        'maxHeight': max_height
+                    }
+                )
+            ], style={'padding': '1.5rem', 'textAlign': 'center'})
+        )
+        
+        card = dbc.Col([
+            dbc.Card(card_content, style=card_style)
+        ], width=12, lg=col_width, className="mb-4")
+        cards.append(card)
+    
+    return html.Div([
+        html.Div([
+            html.H3("📓 Análises do Notebook", className="mb-2", style={'color': COLORS['dark'], 'fontWeight': '700'}),
+            html.P(
+                f"Visualizações e gráficos gerados durante a análise dos dados do censo arbóreo. Total de {len(imagens)} visualização(ões) encontrada(s).",
+                style={'color': COLORS['gray'], 'fontSize': '0.95rem', 'marginBottom': '2rem'}
+            )
+        ], style={'marginBottom': '1.5rem'}),
+        dbc.Row(cards, className="g-4")
+    ])
 
 if __name__ == '__main__':
     app.run(debug=True, port=8050)

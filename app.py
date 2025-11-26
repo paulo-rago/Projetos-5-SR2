@@ -12,6 +12,7 @@ from folium.plugins import HeatMap, MarkerCluster
 from pyproj import Transformer
 import numpy as np
 import re
+import hashlib
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -1190,6 +1191,10 @@ def extrair_imagens_notebook():
     """Extrai todas as imagens PNG dos outputs do notebook junto com descrições"""
     notebook_path = Path("notebook/Verdefica_Unificado_12nov2025.ipynb")
     imagens = []
+    imagens_vistas = set()  # Para detectar duplicatas
+    
+    # Contadores para filtrar gráficos específicos
+    contador_rpa = 0  # Gráficos sobre quantidade de árvores por RPA
     
     if not notebook_path.exists():
         return imagens
@@ -1234,6 +1239,14 @@ def extrair_imagens_notebook():
                         if 'image/png' in data:
                             img_data = data['image/png']
                             
+                            # Verifica se a imagem já foi adicionada (remove duplicatas)
+                            # Usa hash MD5 completo da imagem para detectar duplicatas exatas
+                            # img_data já é uma string base64, então codificamos para bytes
+                            img_hash = hashlib.md5(img_data.encode('utf-8') if isinstance(img_data, str) else img_data).hexdigest()
+                            if img_hash in imagens_vistas:
+                                continue  # Pula imagens duplicadas
+                            imagens_vistas.add(img_hash)
+                            
                             # Pega o texto/plain para detectar múltiplos eixos
                             titulo = None
                             num_axes = 1
@@ -1248,6 +1261,34 @@ def extrair_imagens_notebook():
                             
                             # Gera descrição baseada no código e contexto
                             descricao = gerar_descricao_grafico(codigo_completo, titulo_markdown, num_axes)
+                            
+                            # Filtros para remover gráficos específicos
+                            deve_remover = False
+                            
+                            # 1. Remove gráfico com 3 eixos sobre distribuição do tamanho das copas
+                            # Descrição: "a distribuição do tamanho das copas das árvores"
+                            if num_axes == 3 and 'distribuição do tamanho das copas' in descricao.lower():
+                                deve_remover = True
+                            
+                            # 2. Remove gráfico com 1 eixo sobre "relação entre duas variáveis"
+                            # Descrição: "a relação entre duas variáveis das árvores"
+                            if num_axes == 1 and 'relação entre duas variáveis das árvores' in descricao.lower():
+                                deve_remover = True
+                            
+                            # 3. Remove dois gráficos sobre quantidade de árvores por RPA
+                            # Descrição: "a quantidade de árvores por RPA no Recife"
+                            if 'quantidade de árvores por rpa no recife' in descricao.lower():
+                                contador_rpa += 1
+                                if contador_rpa <= 2:  # Remove os 2 primeiros
+                                    deve_remover = True
+                            
+                            # 4. Remove gráfico sobre proporção de árvores por RPA
+                            # Descrição: "a proporção de árvores por RPA no Recife"
+                            if 'proporção de árvores por rpa no recife' in descricao.lower():
+                                deve_remover = True
+                            
+                            if deve_remover:
+                                continue  # Pula este gráfico
                             
                             imagens.append({
                                 'imagem': img_data,
@@ -1330,8 +1371,17 @@ def render_notebook():
             else:
                 esta_sozinho = not anterior_tem_1_eixo and not proximo_tem_1_eixo
         
+        # Verifica se é o gráfico específico sobre distribuição das alturas
+        eh_grafico_alturas = num_axes == 1 and descricao and 'distribuição das alturas das árvores' in descricao.lower()
+        
         # Offset para centralizar se estiver sozinho (offset de 3 = centraliza coluna de 6)
-        offset = 3 if (esta_sozinho and num_axes == 1) else 0
+        # Centraliza apenas o gráfico de alturas quando tiver 1 eixo
+        if eh_grafico_alturas:
+            offset = 3  # Centraliza gráfico de alturas
+        elif esta_sozinho and num_axes == 1:
+            offset = 3
+        else:
+            offset = 0
         
         # Ajusta altura máxima baseado no número de eixos
         max_height = '1000px' if num_axes > 3 else ('900px' if num_axes > 1 else '600px')

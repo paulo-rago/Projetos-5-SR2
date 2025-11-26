@@ -1002,6 +1002,35 @@ def render_notebook():
         # Se tiver mais de 1 eixo, usa largura total (12), senão usa metade (6)
         col_width = 12 if num_axes > 1 else 6
         
+        # Verifica se o gráfico está sozinho na linha
+        esta_sozinho = False
+        if num_axes == 1:
+            # Verifica o gráfico anterior
+            anterior_tem_1_eixo = False
+            if idx > 0:
+                anterior_num_axes = imagens[idx - 1].get('num_axes', 1)
+                anterior_tem_1_eixo = anterior_num_axes == 1
+            
+            # Verifica o próximo gráfico
+            proximo_tem_1_eixo = False
+            if idx < len(imagens) - 1:
+                proximo_num_axes = imagens[idx + 1].get('num_axes', 1)
+                proximo_tem_1_eixo = proximo_num_axes == 1
+            
+            # Está sozinho se:
+            # - É o primeiro E o próximo não tem 1 eixo (ou não existe)
+            # - O anterior não tem 1 eixo E o próximo não tem 1 eixo (ou não existe)
+            # - É o último E o anterior não tem 1 eixo
+            if idx == 0:
+                esta_sozinho = not proximo_tem_1_eixo
+            elif idx == len(imagens) - 1:
+                esta_sozinho = not anterior_tem_1_eixo
+            else:
+                esta_sozinho = not anterior_tem_1_eixo and not proximo_tem_1_eixo
+        
+        # Offset para centralizar se estiver sozinho (offset de 3 = centraliza coluna de 6)
+        offset = 3 if (esta_sozinho and num_axes == 1) else 0
+        
         # Ajusta altura máxima baseado no número de eixos
         max_height = '1000px' if num_axes > 3 else ('900px' if num_axes > 1 else '600px')
         
@@ -1048,9 +1077,14 @@ def render_notebook():
             ], style={'padding': '1.5rem', 'textAlign': 'center'})
         )
         
+        # Aplica offset se necessário para centralizar
+        col_class = f"mb-4"
+        if offset > 0:
+            col_class += f" offset-lg-{offset}"
+        
         card = dbc.Col([
             dbc.Card(card_content, style=card_style)
-        ], width=12, lg=col_width, className="mb-4")
+        ], width=12, lg=col_width, className=col_class)
         cards.append(card)
     
     return html.Div([

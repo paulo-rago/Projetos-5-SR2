@@ -21,3 +21,6 @@ gunicorn>=21.2.0
 
 # Optional: melhor performance
 flask-caching>=2.1.0
+
+# Machine Learning
+scikit-learn>=1.0.0

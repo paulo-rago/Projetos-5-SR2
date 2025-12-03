@@ -11,6 +11,7 @@ import folium
 from folium.plugins import HeatMap, MarkerCluster
 from pyproj import Transformer
 import numpy as np
+from flask import send_file
 
 # ============================================
 # INICIALIZAR APP
@@ -364,7 +365,7 @@ app.layout = html.Div([
             dcc.Tab(label='Dashboard', value='dashboard'),
             dcc.Tab(label='Análise Estatística', value='analise'),
             dcc.Tab(label='Mapa', value='mapa'),
-            dcc.Tab(label='Seletor de Espécies', value='especies'),
+            dcc.Tab(label='Seletor de Espécies', value='tela-react'),
         ]),
         
         html.Div(id='tab-content', style={'marginTop': '2rem', 'marginBottom': '4rem'}),
@@ -395,8 +396,8 @@ def render_content(tab):
         return render_analise()
     elif tab == 'mapa':
         return render_mapa()
-    elif tab == 'especies':
-        return render_especies()
+    elif tab == 'tela-react':
+        return render_tela_react()
     else:
         return dbc.Alert("🚧 Em desenvolvimento...", color="info")
 
@@ -420,7 +421,7 @@ def navegar_pelo_dashboard(btn_mapa, btn_especies):
     if button_id == 'btn-ir-mapa':
         return 'mapa'
     elif button_id == 'btn-ver-todas':
-        return 'especies'
+        return 'tela-react'
         
     return dash.no_update
 
@@ -798,7 +799,59 @@ def limpar_filtros(n_clicks):
     return ['1', '2', '3', '4', '5', '6']
 
 def render_analise(): return html.Div([html.H3("📈 Análise Estatística"), dbc.Alert("🚧 Em desenvolvimento...", color="info")])
-def render_especies(): return html.Div([html.H3("Seletor de Espécies"), dbc.Alert("🚧 Em desenvolvimento...", color="info")])
+
+def render_tela_react():
+    """Renderiza a tela React em um iframe"""
+    build_path = Path("tela_build")
+    if build_path.exists() and (build_path / "index.html").exists():
+        return html.Div([
+            html.Iframe(
+                src="/tela-react/",
+                style={
+                    'width': '100%',
+                    'height': 'calc(100vh - 200px)',
+                    'border': 'none',
+                    'borderRadius': '12px'
+                }
+            )
+        ])
+    else:
+        return dbc.Alert([
+            html.H5("⚠️ Build do React não encontrado"),
+            html.P("Execute o comando: cd tela && npm run build", className="mb-0")
+        ], color="warning")
+
+# ============================================
+# ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS DO REACT
+# ============================================
+@server.route('/tela-react/')
+@server.route('/tela-react/<path:path>')
+def serve_react_app(path='index.html'):
+    """Serve os arquivos estáticos do build do React"""
+    build_dir = Path("tela_build")
+    
+    if not build_dir.exists():
+        return "Build do React não encontrado. Execute: cd tela && npm run build", 404
+    
+    if path == '' or path == '/':
+        path = 'index.html'
+    
+    file_path = build_dir / path
+    
+    if file_path.exists() and file_path.is_file():
+        return send_file(str(file_path))
+    elif path == 'index.html':
+        # Se não encontrar index.html, tenta servir o que existe
+        index_file = build_dir / 'index.html'
+        if index_file.exists():
+            return send_file(str(index_file))
+        return "index.html não encontrado", 404
+    else:
+        # Para SPA, sempre retorna index.html para rotas não encontradas
+        index_file = build_dir / 'index.html'
+        if index_file.exists():
+            return send_file(str(index_file))
+        return "Arquivo não encontrado", 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=8050)

@@ -105,27 +105,18 @@ const SpeciesCard = ({
             : `${stock} mudas disponíveis`}
         </p>
 
-        {/* Buttons */}
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 border-border text-muted-foreground hover:bg-secondary"
-          >
-            Ver detalhes
-          </Button>
-          <Button
-            size="sm"
-            className={`flex-1 ${
-              isSelected
-                ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-                : "bg-primary hover:bg-primary/90 text-primary-foreground"
-            }`}
-            onClick={onToggleSelect}
-          >
-            {isSelected ? "Remover" : "Adicionar ao plano"}
-          </Button>
-        </div>
+        {/* Button */}
+        <Button
+          size="sm"
+          className={`w-full ${
+            isSelected
+              ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+              : "bg-primary hover:bg-primary/90 text-primary-foreground"
+          }`}
+          onClick={onToggleSelect}
+        >
+          {isSelected ? "Remover" : "Comparar"}
+        </Button>
       </div>
     </div>
   );

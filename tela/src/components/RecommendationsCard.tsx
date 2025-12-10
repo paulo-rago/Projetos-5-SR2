@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
 interface Recommendation {
@@ -11,7 +10,6 @@ interface RecommendationsCardProps {
 }
 
 const RecommendationsCard = ({ recommendations }: RecommendationsCardProps) => {
-
   return (
     <div className="card-elevated p-5 bg-accent/50 border-primary/20">
       <div className="flex items-start gap-3 mb-4">
@@ -28,7 +26,7 @@ const RecommendationsCard = ({ recommendations }: RecommendationsCardProps) => {
         </div>
       </div>
 
-      <div className="space-y-4 mb-5">
+      <div className="space-y-4">
         {recommendations.map((rec) => (
           <div key={rec.region} className="flex items-start gap-3">
             <span className="text-sm font-semibold text-foreground min-w-[80px]">
@@ -47,10 +45,6 @@ const RecommendationsCard = ({ recommendations }: RecommendationsCardProps) => {
           </div>
         ))}
       </div>
-
-      <Button className="bg-info hover:bg-info/90 text-info-foreground">
-        Ver mapa de recomendações
-      </Button>
     </div>
   );
 };

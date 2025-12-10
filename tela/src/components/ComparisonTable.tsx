@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -79,12 +78,6 @@ const ComparisonTable = ({ species }: ComparisonTableProps) => {
             ))}
           </TableBody>
         </Table>
-      </div>
-
-      <div className="mt-5 flex justify-center">
-        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8">
-          Adicionar ao plano de plantio
-        </Button>
       </div>
     </div>
   );

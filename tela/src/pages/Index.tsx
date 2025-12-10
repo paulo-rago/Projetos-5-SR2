@@ -2,9 +2,6 @@ import { useState, useMemo } from "react";
 import FiltersPanel from "@/components/FiltersPanel";
 import SpeciesCard from "@/components/SpeciesCard";
 import ComparisonTable from "@/components/ComparisonTable";
-import RecommendationsCard from "@/components/RecommendationsCard";
-import ActionButtons from "@/components/ActionButtons";
-import Footer from "@/components/Footer";
 import {
   Select,
   SelectContent,
@@ -12,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { mockSpecies, mockRecommendations } from "@/data/mockData";
+import { mockSpecies } from "@/data/mockData";
 
 type SortOption = "relevance" | "name" | "stock";
 
@@ -195,18 +192,10 @@ const Index = () => {
               {selectedSpeciesData.length > 0 && (
                 <ComparisonTable species={selectedSpeciesData} />
               )}
-
-              {/* Recommendations */}
-              <RecommendationsCard recommendations={mockRecommendations} />
-
-              {/* Action Buttons */}
-              <ActionButtons />
             </div>
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };

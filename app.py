@@ -943,6 +943,35 @@ def render_analise():
         _render_notebook_graficos()
     ])
 
+def _render_secoes_analise(card_body_content, secoes_analise):
+    """Função auxiliar para renderizar seções de análise com estilo padronizado"""
+    # Adiciona separador antes da análise
+    card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+    
+    # Adiciona cada seção da análise com estilo padronizado
+    for secao in secoes_analise:
+        card_body_content.append(
+            html.Div([
+                html.H5(secao['titulo'], style={
+                    'fontWeight': '700',
+                    'color': COLORS['primary'],
+                    'marginBottom': '1rem',
+                    'fontSize': '1.1rem',
+                    'marginTop': '0'
+                }),
+                html.P(
+                    secao['conteudo'],
+                    style={
+                        'whiteSpace': 'pre-line',
+                        'lineHeight': '1.8',
+                        'color': COLORS['dark'],
+                        'marginBottom': '1.5rem',
+                        'textAlign': 'justify'
+                    }
+                )
+            ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+        )
+
 def _render_notebook_graficos():
     """Função auxiliar para renderizar os gráficos do notebook"""
     imagens = extrair_imagens_notebook()
@@ -987,6 +1016,16 @@ def _render_notebook_graficos():
         
         # Altura máxima
         max_height = '1000px' if num_axes > 3 else ('900px' if num_axes > 1 else '600px')
+        
+        # Reduz altura para gráficos específicos que estão muito grandes
+        if grafico_id in ['GRAFICO_019', 'GRAFICO_008']:
+            # Reduz 40% da altura original
+            if num_axes > 3:
+                max_height = '600px'  # Era 1000px
+            elif num_axes > 1:
+                max_height = '500px'  # Era 900px
+            else:
+                max_height = '400px'  # Era 600px
         
         # Conteúdo do card
         card_content = []
@@ -1034,32 +1073,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_014
         if grafico_id == 'GRAFICO_014':
@@ -1083,32 +1098,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_012
         if grafico_id == 'GRAFICO_012':
@@ -1132,32 +1123,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_008
         if grafico_id == 'GRAFICO_008':
@@ -1181,32 +1148,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_006
         if grafico_id == 'GRAFICO_006':
@@ -1230,32 +1173,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_005
         if grafico_id == 'GRAFICO_005':
@@ -1279,32 +1198,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_003
         if grafico_id == 'GRAFICO_003':
@@ -1328,32 +1223,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_002
         if grafico_id == 'GRAFICO_002':
@@ -1377,32 +1248,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_001
         if grafico_id == 'GRAFICO_001':
@@ -1426,32 +1273,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_007
         if grafico_id == 'GRAFICO_007':
@@ -1475,32 +1298,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_018
         if grafico_id == 'GRAFICO_019':
@@ -1524,32 +1323,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_019
         if grafico_id == 'GRAFICO_020':
@@ -1573,32 +1348,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         # Adiciona análise específica para GRAFICO_020
         if grafico_id == 'GRAFICO_021':
@@ -1622,32 +1373,8 @@ def _render_notebook_graficos():
                 }
             ]
             
-            # Adiciona separador antes da análise
-            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
-            
-            # Adiciona cada seção da análise
-            for secao in secoes_analise:
-                card_body_content.append(
-                    html.Div([
-                        html.H5(secao['titulo'], style={
-                            'fontWeight': '700',
-                            'color': COLORS['primary'],
-                            'marginBottom': '1rem',
-                            'fontSize': '1.1rem',
-                            'marginTop': '0'
-                        }),
-                        html.P(
-                            secao['conteudo'],
-                            style={
-                                'whiteSpace': 'pre-line',
-                                'lineHeight': '1.8',
-                                'color': COLORS['dark'],
-                                'marginBottom': '1.5rem',
-                                'textAlign': 'justify'
-                            }
-                        )
-                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
-                )
+            # Usa função padronizada para renderizar análise
+            _render_secoes_analise(card_body_content, secoes_analise)
         
         card_content.append(
             dbc.CardBody(card_body_content, style={'padding': '1.5rem', 'textAlign': 'center'})
@@ -1665,7 +1392,7 @@ def _render_notebook_graficos():
     
     return html.Div([
         html.P(
-            f"Visualizações e gráficos gerados durante a análise dos dados do censo arbóreo. Total de {len(imagens)} visualização(ões) encontrada(s).",
+            f"Visualizações e gráficos gerados durante a análise dos dados do censo arbóreo. Total de {len(imagens)} visualizaões encontradas.",
             style={'color': COLORS['gray'], 'fontSize': '0.95rem', 'marginBottom': '2rem'}
         ),
         dbc.Row(cards, className="g-4")
@@ -1869,9 +1596,26 @@ def extrair_imagens_notebook():
                            'GRAFICO_013', 'GRAFICO_016', 'GRAFICO_017', 'GRAFICO_018']
         imagens_filtradas = [img for img in imagens_filtradas if img['id'] not in ids_para_remover]
         
-        # Ordena os gráficos por ID para manter a ordem correta (GRAFICO_001, GRAFICO_002, etc.)
-        # Isso garante que os textos apareçam na ordem esperada, mesmo que alguns gráficos tenham sido removidos
-        imagens_filtradas.sort(key=lambda x: x['id'])
+        # Ordena os gráficos com ordem customizada para melhor layout visual
+        # GRAFICO_012 será posicionado logo após GRAFICO_005
+        ordem_customizada = {}
+        ordem_base = sorted([img['id'] for img in imagens_filtradas])
+        
+        # Cria ordem customizada: remove GRAFICO_012 da posição original e insere após GRAFICO_005
+        ordem_final = []
+        for id_grafico in ordem_base:
+            if id_grafico == 'GRAFICO_012':
+                continue  # Será inserido depois
+            ordem_final.append(id_grafico)
+            if id_grafico == 'GRAFICO_005':
+                ordem_final.append('GRAFICO_012')  # Insere logo após GRAFICO_005
+        
+        # Se GRAFICO_012 não estava na lista ou GRAFICO_005 não existe, mantém ordem original
+        if 'GRAFICO_012' in ordem_base and 'GRAFICO_005' in ordem_base:
+            ordem_map = {id_grafico: idx for idx, id_grafico in enumerate(ordem_final)}
+            imagens_filtradas.sort(key=lambda x: ordem_map.get(x['id'], 999))
+        else:
+            imagens_filtradas.sort(key=lambda x: x['id'])
         
         # IDs são estáticos - NÃO renumerar após filtragem
         # Os IDs originais (atribuídos na primeira passada) são mantidos

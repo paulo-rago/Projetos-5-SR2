@@ -32,7 +32,6 @@ app = dash.Dash(
 
 server = app.server
 
-# CSS customizado (mantido o original)
 app.index_string = '''
 <!DOCTYPE html>
 <html>
@@ -86,11 +85,6 @@ app.index_string = '''
 </html>
 '''
 
-# ============================================
-# CARREGAR DADOS E CALCULAR MÉTRICAS
-# 🌟 OTIMIZAÇÃO 1: CARREGAR APENAS COLUNAS ESSENCIAIS 🌟
-# ============================================
-
 df_geral_file = Path("censo_arboreo_final_geral.csv")
 metricas = None
 df_geral = None
@@ -99,8 +93,8 @@ COLUNAS_ESSENCIAIS = [
     'x', 'y', 'nome_popular', 'especie', 'fitossanid_grupo', 
     'estado_fitossanitario', 'condicao_fisica', 'saude', 
     'altura', 'altura_total', 'data_plantio', 'rpa', 
-    'copa', 'cap', # para o classificador
-    'bairro' # se for usado em alguma análise futura
+    'copa', 'cap',
+    'bairro'
 ]
 
 if df_geral_file.exists():
@@ -111,7 +105,7 @@ if df_geral_file.exists():
         df_completo = pd.read_csv(df_geral_file, low_memory=False)
         colunas_existentes = [col for col in COLUNAS_ESSENCIAIS if col in df_completo.columns]
         df_geral = df_completo[colunas_existentes].copy()
-        del df_completo # Libera a memória do DataFrame completo lido temporariamente
+        del df_completo
         
     except Exception as e:
         print(f"❌ Erro ao ler CSV com colunas essenciais: {e}")
@@ -181,6 +175,7 @@ if df_geral_file.exists():
             # ---------------------------------------------------------
             pct_atencao = 0
             total_avaliadas = 0
+            total_criticas = 0 # <--- ADICIONADO: Inicializa total de árvores críticas
             
             # Ajuste aqui o nome da coluna conforme seu CSV final
             col_fito = 'fitossanid_grupo' if 'fitossanid_grupo' in df_geral.columns else None
@@ -213,7 +208,7 @@ if df_geral_file.exists():
                 
                 # Filtra quem está na lista de termos críticos DENTRO das avaliadas
                 df_criticas = df_avaliadas[df_avaliadas[col_fito].isin(termos_criticos)]
-                total_criticas = len(df_criticas)
+                total_criticas = len(df_criticas) # <--- Calcula o total de críticas
                 
                 # 4. Cálculo final
                 if total_avaliadas > 0:
@@ -253,6 +248,7 @@ if df_geral_file.exists():
                 "total_arvores": total_arvores,
                 "pct_atencao": pct_atencao,
                 "total_avaliadas": int(total_avaliadas),
+                "total_criticas": int(total_criticas),
                 "especie_mais_comum": especie_mais_comum,
                 "especie_top_count": especie_top_count,
                 "especie_top_pct": especie_top_pct,
@@ -510,14 +506,16 @@ def render_dashboard():
             ], style=card_style)
         ], width=12, md=True, className="mb-3"),
         
-        # 2. Atenção
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
                     html.Div("⚠️", style={'fontSize': '2.5rem', 'marginBottom': '0.5rem'}),
-                    html.H2(f"{metricas['pct_atencao']:.1f}%", style={'color': COLORS['dark'], 'marginBottom': '0.25rem', 'fontWeight': '700', 'fontSize': '1.75rem'}),
-                    html.P("Precisam atenção", style={'color': COLORS['gray'], 'fontSize': '0.875rem', 'marginBottom': 0, 'fontWeight': '500'}),
-                    html.P(f"de {metricas.get('total_avaliadas', 0):,} avaliadas", style={'color': COLORS['light_gray'], 'fontSize': '0.75rem', 'marginTop': '0.15rem'})
+                    html.H2(f"{metricas['pct_atencao']:.1f}%", style={'color': COLORS['dark'], 'marginBottom': '0.25rem', 'fontWeight': '700', 'fontSize': '1.75rem'}),  
+                    html.P("das árvores estão doentes ou mortas", style={'color': COLORS['gray'], 'fontSize': '0.875rem', 'marginBottom': 0, 'fontWeight': '500'}),
+                    html.P(
+                        f"{metricas.get('total_criticas', 0):,} de {metricas.get('total_avaliadas', 0):,} avaliadas", 
+                        style={'color': COLORS['light_gray'], 'fontSize': '0.75rem', 'marginTop': '0.15rem'}
+                    )
                 ], style={'textAlign': 'center', 'padding': '1.5rem'})
             ], style=card_style)
         ], width=12, md=True, className="mb-3"),
@@ -794,7 +792,7 @@ def render_mapa():
 def atualizar_mapa_folium(n_clicks, tipo_mapa, rpas_selecionadas):
     """
     Atualiza o mapa Folium. 
-    🌟 OTIMIZAÇÃO 3: Implementa limite estrito de 1.000 pontos para qualquer visualização de mapa.
+    🌟 OTIMIZAÇÃO 3: Implementa limite estrito de 1000 pontos para qualquer visualização de mapa.
     """
     if not n_clicks: return "", dbc.Alert("👆 Clique no botão 'Gerar Mapa' para visualizar", color="info"), "Mapa de Calor", "Todas RPAs"
     if df_geral is None or len(df_geral) == 0: return "", dbc.Alert("❌ Dataset não encontrado ou vazio!", color="danger"), "Erro", "Erro"
@@ -860,7 +858,7 @@ def limpar_filtros(n_clicks):
     return ['1', '2', '3', '4', '5', '6']
 
 # ============================================
-# FUNÇÃO PARA TREINAR CLASSIFICADOR (mantida a original)
+# FUNÇÃO PARA TREINAR CLASSIFICADOR
 # ============================================
 
 def treinar_classificador():
@@ -1172,7 +1170,7 @@ def serve_react_app(path='index.html'):
         return "Arquivo não encontrado", 404
 
 # ============================================
-# FUNÇÃO PARA GERAR DESCRIÇÃO DO GRÁFICO (mantida a original)
+# FUNÇÃO PARA GERAR DESCRIÇÃO DO GRÁFICO
 # ============================================
 
 def gerar_descricao_grafico(codigo, titulo_markdown, num_axes):
@@ -1404,7 +1402,7 @@ def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basic
     return descricao_detalhada
 
 # ============================================
-# FUNÇÃO PARA EXTRAIR IMAGENS DO NOTEBOOK (mantida a original)
+# FUNÇÃO PARA EXTRAIR IMAGENS DO NOTEBOOK
 # ============================================
 
 def extrair_imagens_notebook():
@@ -1528,7 +1526,7 @@ def extrair_imagens_notebook():
     return imagens
 
 # ============================================
-# FUNÇÃO DE RENDERIZAÇÃO DO NOTEBOOK (mantida a original)
+# FUNÇÃO DE RENDERIZAÇÃO DO NOTEBOOK
 # ============================================
 
 if __name__ == '__main__':

@@ -3,117 +3,133 @@ INSTRUCOES PARA EXECUTAR O PROJETO - CENSO ARBOREO DE RECIFE
 Setup Completo do Projeto Verdefica
 ================================================================================
 
-Este guia explica como configurar todos os aspectos técnicos do projeto, incluindo Python e React.
+Este guia explica como configurar todos os aspectos técnicos do projeto,
+incluindo Python e React, e como fazer o deploy.
 
 ================================================================================
 PRE-REQUISITOS
 ================================================================================
 
 1. Python (3.8 ou superior)
-   - Verificar: python3 --version ou python --version
-   - Instalar: https://www.python.org/downloads/
+   - Verificar: python3 --version ou python --version
+   - Instalar: https://www.python.org/downloads/
 
 2. Node.js e npm (para a página React)
-   - Verificar: node --version e npm --version
-   - Instalar: https://nodejs.org/
-   - Versão recomendada: Node.js 16+ e npm 8+
+   - Verificar: node --version e npm --version
+   - Instalar: https://nodejs.org/
+   - Versão recomendada: Node.js 16+ e npm 8+
 
 ================================================================================
 SETUP PYTHON (BACKEND DASH)
 ================================================================================
 
 1. Criar ambiente virtual (se ainda não foi criado):
-   python3 -m venv venv
-   
-   (No Windows: python -m venv venv)
+   python3 -m venv venv
+   
+   (No Windows: python -m venv venv)
 
 2. Ativar ambiente virtual:
-   
-   Linux/Mac:
-   source venv/bin/activate
-   
-   Windows:
-   venv\Scripts\activate
+   
+   Linux/Mac:
+   source venv/bin/activate
+   
+   Windows:
+   venv\Scripts\activate
 
 3. Instalar dependências Python:
-   pip install -r requirements.txt
-   
-   Isso instalará:
-   - Dash e Dash Bootstrap Components
-   - Pandas, NumPy
-   - Plotly
-   - Folium, PyProj
-   - Scikit-learn
-   - Flask e outras dependências
+   pip install -r requirements.txt
+   
+   Isso instalará:
+   - Dash, Dash Bootstrap Components, Flask, Gunicorn
+   - Pandas, NumPy, Plotly
+   - Folium, PyProj
+   - Scikit-learn (Módulo sklearn)
+   - E outras dependências necessárias
 
 ================================================================================
 SETUP REACT (FRONTEND - SELETOR DE ESPECIES)
 ================================================================================
 
 1. Navegar para a pasta do React:
-   cd tela
+   cd tela
 
 2. Instalar dependências Node.js:
-   npm install
-   
-   Isso instalará todas as dependências listadas em tela/package.json:
-   - React 18
-   - Vite
-   - Radix UI components
-   - Tailwind CSS
-   - TypeScript
-   - E outras dependências do frontend
+   npm install
+   
+   Isso instalará todas as dependências listadas em tela/package.json.
 
 3. Fazer build do React:
-   npm run build
-   
-   Isso gerará os arquivos estáticos em ../tela_build/
+   npm run build
+   
+   Isso gerará os arquivos estáticos em ../tela_build/ que o Dash usa.
 
 4. Voltar para a raiz do projeto:
-   cd ..
+   cd ..
 
 ================================================================================
-EXECUTAR O PROJETO
+EXECUTAR O PROJETO (LOCAL)
 ================================================================================
 
 Opção 1: Usando o script
-   ./run_app.sh
+   ./run_app.sh
 
 Opção 2: Manualmente
-   source venv/bin/activate  # Se ainda não estiver ativado
-   python app.py
+   source venv/bin/activate  # Se ainda não estiver ativado
+   python app.py
 
 Acessar:
-   - Dashboard: http://localhost:8050
-   - Seletor de Espécies: http://localhost:8050/tela-react/
+   - Dashboard LOCAL: http://localhost:8050
+   - Seletor de Espécies LOCAL: http://localhost:8050/tela-react/
+
+================================================================================
+DEPLOY EM PRODUÇÃO (HEROKU)
+================================================================================
+
+URL de Produção: https://verdefica-67127713213c.herokuapp.com/
+
+1. Configurar Heroku
+    - O arquivo Procfile deve estar na raiz.
+    - Certifique-se que gunicorn está em requirements.txt.
+
+2. Com Heroku CLI instalado e logado:
+    # Se o app já existe:
+    git push heroku main
+    
+    # Se for um novo app:
+    # heroku create nome-do-seu-app
+    # git push heroku main
+    
+3. Acessar:
+    - O URL de Produção acima.
 
 ================================================================================
 ARQUIVOS NECESSARIOS
 ================================================================================
 
 Arquivos de entrada obrigatórios:
-   - censo_arboreo_final.csv (deve estar no diretório do projeto)
-   - censo_arboreo_final_geral.csv (deve estar no diretório do projeto)
+   - censo_arboreo_final.csv (deve estar no diretório do projeto)
+   - censo_arboreo_final_geral.csv (deve estar no diretório do projeto)
 
 Arquivos do projeto (principais):
-   - app.py (código principal do Dash)
-   - requirements.txt (dependências Python)
-   - tela/package.json (dependências React/Node.js)
-   - notebook/Verdefica_Unificado_12nov2025.ipynb (notebook com análises)
+   - app.py (código principal do Dash)
+   - requirements.txt (dependências Python)
+   - Procfile (para o Heroku/Gunicorn)
+   - tela/package.json (dependências React/Node.js)
+   - notebook/Verdefica_Unificado_12nov2025.ipynb (notebook com análises)
 
 ================================================================================
 ESTRUTURA DE DEPENDENCIAS
 ================================================================================
 
 Python (requirements.txt):
-   - Gerencia todas as dependências do backend Dash
-   - Inclui: Dash, Flask, Pandas, Plotly, Folium, Scikit-learn, etc.
-   - Instalar: pip install -r requirements.txt
+   - Gerencia todas as dependências do backend Dash
+   - Inclui: Dash, Flask, Pandas, Plotly, Folium, Scikit-learn, etc.
+   - Instalar: pip install -r requirements.txt
 
 Node.js (tela/package.json):
-   - Gerencia todas as dependências do frontend React
-   - Inclui: React, Vite, Radix UI, Tailwind CSS, TypeScript, etc.
-   - Instalar: cd tela && npm install
+   - Gerencia todas as dependências do frontend React
+   - Inclui: React, Vite, Radix UI, Tailwind CSS, TypeScript, etc.
+   - Instalar: cd tela && npm install
 
 ================================================================================
 FUNCIONALIDADES DO DASHBOARD
@@ -130,63 +146,68 @@ ATUALIZAR DEPENDENCIAS
 ================================================================================
 
 Python:
-   source venv/bin/activate
-   pip install -r requirements.txt --upgrade
+   source venv/bin/activate
+   pip install -r requirements.txt --upgrade
 
 React:
-   cd tela
-   npm update
-   npm run build
-   cd ..
+   cd tela
+   npm update
+   npm run build
+   cd ..
 
 ================================================================================
 NOTAS IMPORTANTES
 ================================================================================
 
 1. O requirements.txt NÃO inclui dependências do React
-   - As dependências do React estão em tela/package.json
-   - São gerenciadas via npm, não pip
+   - As dependências do React estão em tela/package.json
+   - São gerenciadas via npm, não pip
 
 2. Build do React é necessário
-   - O app Dash serve os arquivos estáticos de tela_build/
-   - Sem o build, a aba "Seletor de Espécies" não funcionará
+   - O app Dash serve os arquivos estáticos de tela_build/
+   - Sem o build, a aba "Seletor de Espécies" não funcionará
 
 3. Ordem de instalação
-   - Primeiro: Python e requirements.txt
-   - Depois: Node.js e npm install na pasta tela/
-   - Por fim: npm run build para gerar os arquivos estáticos
+   - Primeiro: Python e requirements.txt
+   - Depois: Node.js e npm install na pasta tela/
+   - Por fim: npm run build para gerar os arquivos estáticos
 
 ================================================================================
 SOLUCAO DE PROBLEMAS
 ================================================================================
 
 Erro: "Build do React não encontrado"
-   cd tela
-   npm install
-   npm run build
-   cd ..
+   cd tela
+   npm install
+   npm run build
+   cd ..
 
-Erro: "Module not found" (Python)
-   source venv/bin/activate
-   pip install -r requirements.txt
+Erro: "Module not found" (Python - ex: ModuleNotFoundError: No module named 'sklearn')
+   source venv/bin/activate
+   pip install -r requirements.txt
 
 Erro: "npm: command not found"
-   - Instale Node.js: https://nodejs.org/
+   - Instale Node.js: https://nodejs.org/
 
 Erro: "Port 8050 already in use"
-   - Altere a porta no final do app.py:
-     app.run(debug=True, port=8051)
+   - Altere a porta no final do app.py:
+     app.run(debug=True, port=8051)
+   
+Erro no Heroku (App crashed/H10):
+    - 1. Verifique as logs: heroku logs --tail
+    - 2. Corrija o IndentationError ou SyntaxError no app.py.
+    - 3. Verifique se o Dyno Type é o 'Eco' (plano de baixo custo).
 
-Se o dashboard não abrir:
-   - Verifique se o ambiente virtual está ativado
-   - Verifique se todas as dependências estão instaladas
-   - Verifique se a porta 8050 está livre
+Se o dashboard não abrir localmente:
+   - Verifique se o ambiente virtual está ativado
+   - Verifique se todas as dependências estão instaladas
+   - O endereço correto é sempre http://localhost:8050/ (ignore outras portas que possam ser exibidas no início).
 
 Se o mapa não carregar:
-   - Verifique sua conexão com a internet (os tiles do mapa precisam dela)
+   - Verifique sua conexão com a internet (os tiles do mapa precisam dela)
 
 Se der erro de "Arquivo não encontrado":
-   - Certifique-se de que está rodando o comando python app.py DE DENTRO da pasta do projeto
+   - Certifique-se de que está rodando o comando python app.py DE DENTRO da pasta raiz do projeto.
 
 ================================================================================
 ESTRUTURA DE DIRETORIOS
@@ -195,15 +216,16 @@ ESTRUTURA DE DIRETORIOS
 Projetos 5 - SR2/
 ├── app.py
 ├── requirements.txt
+├── Procfile
 ├── INSTRUCOES.txt (este arquivo)
 ├── censo_arboreo_final.csv (arquivo de entrada)
 ├── censo_arboreo_final_geral.csv (arquivo de entrada)
 ├── especies/ (imagens das espécies)
 ├── notebook/ (notebook com análises)
-│   └── Verdefica_Unificado_12nov2025.ipynb
+│   └── Verdefica_Unificado_12nov2025.ipynb
 ├── tela/ (código fonte React)
-│   ├── package.json (dependências React)
-│   └── src/ (código React)
+│   ├── package.json (dependências React)
+│   └── src/ (código React)
 ├── tela_build/ (arquivos compilados do React - gerado após build)
 ├── venv/ (ambiente virtual Python)
 └── run_app.sh (script para executar o app)
@@ -213,28 +235,31 @@ COMANDOS RAPIDOS
 ================================================================================
 
 Criar ambiente virtual:
-   python3 -m venv venv
+   python3 -m venv venv
 
 Ativar ambiente virtual:
-   source venv/bin/activate
+   source venv/bin/activate
 
 Instalar dependências Python:
-   pip install -r requirements.txt
+   pip install -r requirements.txt
 
 Instalar dependências React:
-   cd tela && npm install && cd ..
+   cd tela && npm install && cd ..
 
 Fazer build do React:
-   cd tela && npm run build && cd ..
+   cd tela && npm run build && cd ..
 
 Executar dashboard:
-   python app.py
+   python app.py
 
 Ou usando o script:
-   ./run_app.sh
+   ./run_app.sh
 
+Deploy Heroku:
+    git push heroku main
+    
 Desativar ambiente virtual (quando terminar):
-   deactivate
+   deactivate
 
 ================================================================================
 FIM DAS INSTRUCOES

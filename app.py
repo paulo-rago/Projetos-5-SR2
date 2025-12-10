@@ -1479,4 +1479,9 @@ def extrair_imagens_notebook():
 # ============================================
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8050)
+    import os
+    # Usa variável de ambiente PORT (fornecida pelo Render) ou porta padrão 8050
+    port = int(os.environ.get('PORT', 8050))
+    # Debug apenas em desenvolvimento local
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug, host='0.0.0.0', port=port)

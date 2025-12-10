@@ -20,3 +20,20 @@ instance/
 .webassets-cache
 errors.log
 debug.log
+
+# Node.js / React
+node_modules/
+tela/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build do React (gerado durante deploy, não precisa commitar)
+tela_build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

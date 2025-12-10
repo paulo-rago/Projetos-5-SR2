@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_002
+        if grafico_id == 'GRAFICO_002':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O gráfico de dispersão evidencia a relação entre o diâmetro do tronco (CAP) e o diâmetro da copa das árvores avaliadas na arborização urbana do Recife. Observa-se uma tendência geral de crescimento conjunto: árvores com troncos mais espessos tendem a apresentar copas mais amplas, embora haja variações importantes entre indivíduos.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'A relação positiva entre o CAP e o diâmetro da copa indica que o desenvolvimento estrutural das árvores na cidade segue um padrão esperado, em que o crescimento do tronco acompanha a expansão da copa. No entanto, a dispersão dos pontos mostra que essa relação não é uniforme, sugerindo influência de fatores como espécie, podas, disponibilidade de espaço, condições do solo e estresse urbano. Árvores com CAP semelhante podem apresentar copas de tamanhos bastante distintos, o que reforça a importância de avaliar cada exemplar individualmente.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'A compreensão dessa relação é fundamental para o planejamento da arborização urbana no Recife. Árvores com copas mais amplas tendem a contribuir mais para o sombreamento das vias, redução da temperatura superficial e melhoria do microclima. Ao mesmo tempo, copas muito desenvolvidas, quando associadas a árvores em espaços restritos, podem gerar conflitos com fiações, calçadas e edificações. O gráfico mostra que nem sempre um tronco mais espesso resulta em copas proporcionalmente maiores, o que destaca a necessidade de manejo específico conforme o contexto urbano.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'Os padrões observados indicam que o CAP, embora seja um bom indicativo do porte da árvore, não deve ser utilizado de forma isolada para decisões de manejo. A variabilidade encontrada reforça a importância de inspeções técnicas periódicas e de um planejamento cuidadoso da escolha de espécies para calçadas e vias públicas no Recife. Compreender a relação entre tronco e copa contribui para uma arborização mais segura, funcional e ambientalmente eficiente no espaço urbano.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_001
         if grafico_id == 'GRAFICO_001':
             # Análise estruturada por seções

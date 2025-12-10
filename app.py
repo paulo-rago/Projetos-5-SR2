@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_005
+        if grafico_id == 'GRAFICO_005':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O gráfico apresenta a relação entre o CAP (circunferência do tronco) e o diâmetro da copa das árvores da arborização urbana do Recife, considerando a exclusão de valores extremos (outliers). A linha de regressão resultante mostra uma relação positiva mais consistente, indicando que o aumento do CAP está associado ao aumento do diâmetro da copa de forma mais regular.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'Com a remoção dos outliers, observa-se uma distribuição mais homogênea dos dados e um ajuste linear mais estável. Isso indica que parte da grande variabilidade observada anteriormente estava associada a árvores atípicas, possivelmente em condições de estresse urbano, podas severas ou espécies com padrões de crescimento distintos. Ainda assim, permanece uma dispersão moderada, o que mostra que fatores locais continuam influenciando o desenvolvimento da copa.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'A análise sem outliers permite projeções mais realistas do crescimento médio das árvores em ambiente urbano. Esse resultado é especialmente útil para o planejamento da arborização do Recife, pois fornece uma estimativa mais confiável do comportamento típico das árvores em condições comuns. Árvores com copas mais amplas continuam sendo essenciais para o sombreamento, conforto térmico e regulação microclimática, enquanto a compreensão dessa relação ajuda a reduzir conflitos com fiação, calçadas e edificações.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'Os resultados indicam que o CAP é um indicador consistente do potencial de expansão da copa quando considerados indivíduos com crescimento dentro do padrão esperado. A exclusão dos outliers reforça a importância de análises técnicas cuidadosas para evitar distorções na tomada de decisão. A compreensão dessa relação contribui para uma gestão mais eficiente, preventiva e sustentável da arborização urbana do Recife.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_003
         if grafico_id == 'GRAFICO_003':
             # Análise estruturada por seções

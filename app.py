@@ -32,7 +32,7 @@ app = dash.Dash(
 
 server = app.server
 
-# CSS customizado
+# CSS customizado (mantido o original)
 app.index_string = '''
 <!DOCTYPE html>
 <html>
@@ -88,167 +88,194 @@ app.index_string = '''
 
 # ============================================
 # CARREGAR DADOS E CALCULAR MÉTRICAS
+# 🌟 OTIMIZAÇÃO 1: CARREGAR APENAS COLUNAS ESSENCIAIS 🌟
 # ============================================
 
 df_geral_file = Path("censo_arboreo_final_geral.csv")
 metricas = None
 df_geral = None
 
+COLUNAS_ESSENCIAIS = [
+    'x', 'y', 'nome_popular', 'especie', 'fitossanid_grupo', 
+    'estado_fitossanitario', 'condicao_fisica', 'saude', 
+    'altura', 'altura_total', 'data_plantio', 'rpa', 
+    'copa', 'cap', # para o classificador
+    'bairro' # se for usado em alguma análise futura
+]
+
 if df_geral_file.exists():
-    print("📊 Carregando dataset completo...")
-    df_geral = pd.read_csv(df_geral_file, low_memory=False)
+    print("📊 Carregando dataset completo (apenas colunas essenciais) para otimizar RAM...")
     
-    # --- 1. PRÉ-PROCESSAMENTO DE COORDENADAS ---
     try:
-        if 'x' in df_geral.columns and 'y' in df_geral.columns:
-            try:
-                transformer = Transformer.from_crs("EPSG:31985", "EPSG:4326", always_xy=True)
-            except:
-                transformer = Transformer.from_crs("EPSG:32725", "EPSG:4326", always_xy=True)
-            
-            lon, lat = transformer.transform(df_geral['x'].values, df_geral['y'].values)
-            df_geral['latitude'] = lat
-            df_geral['longitude'] = lon
+        # Carrega apenas as colunas que existem no CSV e que são essenciais
+        df_completo = pd.read_csv(df_geral_file, low_memory=False)
+        colunas_existentes = [col for col in COLUNAS_ESSENCIAIS if col in df_completo.columns]
+        df_geral = df_completo[colunas_existentes].copy()
+        del df_completo # Libera a memória do DataFrame completo lido temporariamente
+        
     except Exception as e:
-        print(f"⚠️ Erro coordenadas: {e}")
-
-    # --- 2. CÁLCULO DINÂMICO ---
-    print("🔄 Calculando métricas...")
-    try:
-        # Totais Gerais
-        total_arvores = len(df_geral)
+        print(f"❌ Erro ao ler CSV com colunas essenciais: {e}")
+        df_geral = None # Se falhar, define como None
         
-        # ---------------------------------------------------------
-        # CÁLCULO DE ESPÉCIES (Relativo ao total com espécie)
-        # ---------------------------------------------------------
-        top_especies_list = []
-        especie_mais_comum = "N/A"
-        especie_top_count = 0
-        especie_top_pct = 0
-        total_com_especie = 0
-        num_especies = 0
-        
-        col_esp = 'nome_popular' if 'nome_popular' in df_geral.columns else ('especie' if 'especie' in df_geral.columns else None)
-        
-        if col_esp:
-            # Conta apenas valores não nulos
-            counts_esp = df_geral[col_esp].value_counts()
-            num_especies = len(counts_esp)
-            total_com_especie = counts_esp.sum() # Denominador correto: Soma das árvores identificadas
-            
-            if not counts_esp.empty:
-                especie_mais_comum = counts_esp.index[0]
-                especie_top_count = int(counts_esp.iloc[0])
+    if df_geral is not None and len(df_geral) > 0:
+        # --- 1. PRÉ-PROCESSAMENTO DE COORDENADAS ---
+        try:
+            if 'x' in df_geral.columns and 'y' in df_geral.columns:
+                try:
+                    # Tenta CRS 31985 (Sul)
+                    transformer = Transformer.from_crs("EPSG:31985", "EPSG:4326", always_xy=True)
+                except:
+                    # Tenta CRS 32725 (Recife/Zona 25S)
+                    transformer = Transformer.from_crs("EPSG:32725", "EPSG:4326", always_xy=True)
                 
-                # Cálculo da porcentagem: (Top 1 / Total Identificadas) * 100
-                if total_com_especie > 0:
-                    especie_top_pct = (especie_top_count / total_com_especie) * 100
+                # Aplica transformação e lida com NaNs/Infinitos
+                x_validos = df_geral['x'].fillna(0).values
+                y_validos = df_geral['y'].fillna(0).values
+
+                lon, lat = transformer.transform(x_validos, y_validos)
                 
-                # Monta lista Top 5 com a mesma lógica
-                for nome, qtd in counts_esp.head(5).items():
-                    pct_item = (qtd / total_com_especie) * 100 if total_com_especie > 0 else 0
-                    top_especies_list.append({"nome": nome, "quantidade": int(qtd), "percentual": pct_item})
+                df_geral['latitude'] = lat
+                df_geral['longitude'] = lon
+        except Exception as e:
+            print(f"⚠️ Erro coordenadas: {e}")
 
-        # ---------------------------------------------------------
-        # FITOSSANIDADE (Doentes+Mortas / Total Avaliadas)
-        # ---------------------------------------------------------
-        pct_atencao = 0
-        total_avaliadas = 0
-        
-        # Ajuste aqui o nome da coluna conforme seu CSV final (ex: 'fitossanid_grupo' ou 'estado_fitossanitario')
-        col_fito = 'fitossanid_grupo' if 'fitossanid_grupo' in df_geral.columns else None
-
-        # Se não achar 'fitossanid_grupo', tenta outras opções comuns
-        if not col_fito:
-             for c in ['estado_fitossanitario', 'condicao_fisica', 'saude']:
-                if c in df_geral.columns:
-                    col_fito = c
-                    break
-        
-        if col_fito:
-            # 1. Normaliza para evitar erros de maiúsculas/minúsculas
-            df_geral[col_fito] = df_geral[col_fito].astype(str).str.strip()
+        # --- 2. CÁLCULO DINÂMICO ---
+        print("🔄 Calculando métricas...")
+        try:
+            # Totais Gerais
+            total_arvores = len(df_geral)
             
-            # 2. Define o universo das AVALIADAS (Denominador)
-            # Ignora nulos, vazios e quem está marcado explicitamente como "Não avaliada"
-            filtro_avaliadas = (
-                (df_geral[col_fito].notna()) & 
-                (df_geral[col_fito] != '') & 
-                (df_geral[col_fito] != 'nan') &
-                (df_geral[col_fito] != 'Não avaliada')
-            )
-            df_avaliadas = df_geral[filtro_avaliadas]
-            total_avaliadas = len(df_avaliadas)
+            # ---------------------------------------------------------
+            # CÁLCULO DE ESPÉCIES (Relativo ao total com espécie)
+            # ---------------------------------------------------------
+            top_especies_list = []
+            especie_mais_comum = "N/A"
+            especie_top_count = 0
+            especie_top_pct = 0
+            total_com_especie = 0
+            num_especies = 0
             
-            # 3. Define o grupo de ATENÇÃO (Numerador)
-            # Ajuste os termos conforme os dados do seu Colab ('Injuriada', 'Morta')
-            termos_criticos = ['Injuriada', 'Morta', 'Doente', 'Ruim', 'Péssima', 'Critica']
+            col_esp = 'nome_popular' if 'nome_popular' in df_geral.columns else ('especie' if 'especie' in df_geral.columns else None)
             
-            # Filtra quem está na lista de termos críticos DENTRO das avaliadas
-            df_criticas = df_avaliadas[df_avaliadas[col_fito].isin(termos_criticos)]
-            total_criticas = len(df_criticas)
+            if col_esp:
+                # Conta apenas valores não nulos
+                counts_esp = df_geral[col_esp].value_counts()
+                num_especies = len(counts_esp)
+                total_com_especie = counts_esp.sum() # Denominador correto: Soma das árvores identificadas
+                
+                if not counts_esp.empty:
+                    especie_mais_comum = counts_esp.index[0]
+                    especie_top_count = int(counts_esp.iloc[0])
+                    
+                    # Cálculo da porcentagem: (Top 1 / Total Identificadas) * 100
+                    if total_com_especie > 0:
+                        especie_top_pct = (especie_top_count / total_com_especie) * 100
+                    
+                    # Monta lista Top 5 com a mesma lógica
+                    for nome, qtd in counts_esp.head(5).items():
+                        pct_item = (qtd / total_com_especie) * 100 if total_com_especie > 0 else 0
+                        top_especies_list.append({"nome": nome, "quantidade": int(qtd), "percentual": pct_item})
+
+            # ---------------------------------------------------------
+            # FITOSSANIDADE (Doentes+Mortas / Total Avaliadas)
+            # ---------------------------------------------------------
+            pct_atencao = 0
+            total_avaliadas = 0
             
-            # 4. Cálculo final
-            if total_avaliadas > 0:
-                pct_atencao = (total_criticas / total_avaliadas) * 100
+            # Ajuste aqui o nome da coluna conforme seu CSV final
+            col_fito = 'fitossanid_grupo' if 'fitossanid_grupo' in df_geral.columns else None
 
-        # ---------------------------------------------------------
-        # OUTROS CÁLCULOS (Mantidos)
-        # ---------------------------------------------------------
-        
-        # Altura
-        altura_media = 0
-        altura_max = 0
-        col_altura = 'altura' if 'altura' in df_geral.columns else ('altura_total' if 'altura_total' in df_geral.columns else None)
-        if col_altura:
-            df_geral[col_altura] = pd.to_numeric(df_geral[col_altura].astype(str).str.replace(',', '.'), errors='coerce')
-            df_alt_valida = df_geral[(df_geral[col_altura] > 0) & (df_geral[col_altura] < 60)]
-            if not df_alt_valida.empty:
-                altura_media = df_alt_valida[col_altura].mean()
-                altura_max = df_alt_valida[col_altura].max()
+            # Se não achar 'fitossanid_grupo', tenta outras opções comuns
+            if not col_fito:
+                 for c in ['estado_fitossanitario', 'condicao_fisica', 'saude']:
+                     if c in df_geral.columns:
+                         col_fito = c
+                         break
+            
+            if col_fito:
+                # 1. Normaliza para evitar erros de maiúsculas/minúsculas
+                df_geral[col_fito] = df_geral[col_fito].astype(str).str.strip()
+                
+                # 2. Define o universo das AVALIADAS (Denominador)
+                # Ignora nulos, vazios e quem está marcado explicitamente como "Não avaliada"
+                filtro_avaliadas = (
+                    (df_geral[col_fito].notna()) & 
+                    (df_geral[col_fito] != '') & 
+                    (df_geral[col_fito] != 'nan') &
+                    (df_geral[col_fito] != 'Não avaliada')
+                )
+                df_avaliadas = df_geral[filtro_avaliadas]
+                total_avaliadas = len(df_avaliadas)
+                
+                # 3. Define o grupo de ATENÇÃO (Numerador)
+                # Ajuste os termos conforme os dados do seu Colab ('Injuriada', 'Morta')
+                termos_criticos = ['Injuriada', 'Morta', 'Doente', 'Ruim', 'Péssima', 'Critica']
+                
+                # Filtra quem está na lista de termos críticos DENTRO das avaliadas
+                df_criticas = df_avaliadas[df_avaliadas[col_fito].isin(termos_criticos)]
+                total_criticas = len(df_criticas)
+                
+                # 4. Cálculo final
+                if total_avaliadas > 0:
+                    pct_atencao = (total_criticas / total_avaliadas) * 100
 
-        # Plantios Novos
-        plantios_desde_2020 = 0
-        col_data = 'data_plantio' if 'data_plantio' in df_geral.columns else None
-        if col_data:
-            df_geral[col_data] = pd.to_datetime(df_geral[col_data], dayfirst=True, errors='coerce')
-            plantios_desde_2020 = len(df_geral[df_geral[col_data].dt.year >= 2020])
+            # ---------------------------------------------------------
+            # OUTROS CÁLCULOS (Mantidos)
+            # ---------------------------------------------------------
+            
+            # Altura
+            altura_media = 0
+            altura_max = 0
+            col_altura = 'altura' if 'altura' in df_geral.columns else ('altura_total' if 'altura_total' in df_geral.columns else None)
+            if col_altura:
+                df_geral[col_altura] = pd.to_numeric(df_geral[col_altura].astype(str).str.replace(',', '.'), errors='coerce')
+                df_alt_valida = df_geral[(df_geral[col_altura] > 0) & (df_geral[col_altura] < 60)]
+                if not df_alt_valida.empty:
+                    altura_media = df_alt_valida[col_altura].mean()
+                    altura_max = df_alt_valida[col_altura].max()
 
-        # RPA Distribution
-        distribuicao_rpa = {}
-        if 'rpa' in df_geral.columns:
-            rpa_counts = df_geral['rpa'].value_counts()
-            for rpa_num, count in rpa_counts.items():
-                rpa_key = str(int(rpa_num)) if pd.notna(rpa_num) and str(rpa_num).replace('.','').isdigit() else str(rpa_num)
-                distribuicao_rpa[rpa_key] = {"nome": f"RPA {rpa_key}", "quantidade": int(count)}
+            # Plantios Novos
+            plantios_desde_2020 = 0
+            col_data = 'data_plantio' if 'data_plantio' in df_geral.columns else None
+            if col_data:
+                df_geral[col_data] = pd.to_datetime(df_geral[col_data], dayfirst=True, errors='coerce')
+                plantios_desde_2020 = len(df_geral[df_geral[col_data].dt.year >= 2020])
 
-        metricas = {
-            "total_arvores": total_arvores,
-            "pct_atencao": pct_atencao,
-            "total_avaliadas": int(total_avaliadas),
-            "especie_mais_comum": especie_mais_comum,
-            "especie_top_count": especie_top_count,
-            "especie_top_pct": especie_top_pct,
-            "altura_media_m": altura_media,
-            "altura_max_m": altura_max,
-            "plantios_desde_2020": plantios_desde_2020,
-            "num_especies": num_especies,
-            "total_com_especie": int(total_com_especie),
-            "distribuicao_rpa": distribuicao_rpa,
-            "top_especies": top_especies_list
-        }
+            # RPA Distribution
+            distribuicao_rpa = {}
+            if 'rpa' in df_geral.columns:
+                rpa_counts = df_geral['rpa'].value_counts()
+                for rpa_num, count in rpa_counts.items():
+                    rpa_key = str(int(rpa_num)) if pd.notna(rpa_num) and str(rpa_num).replace('.','').isdigit() else str(rpa_num)
+                    distribuicao_rpa[rpa_key] = {"nome": f"RPA {rpa_key}", "quantidade": int(count)}
 
-    except Exception as e:
-        print(f"❌ Erro calculo: {e}")
-        metricas = None
+            metricas = {
+                "total_arvores": total_arvores,
+                "pct_atencao": pct_atencao,
+                "total_avaliadas": int(total_avaliadas),
+                "especie_mais_comum": especie_mais_comum,
+                "especie_top_count": especie_top_count,
+                "especie_top_pct": especie_top_pct,
+                "altura_media_m": altura_media,
+                "altura_max_m": altura_max,
+                "plantios_desde_2020": plantios_desde_2020,
+                "num_especies": num_especies,
+                "total_com_especie": int(total_com_especie),
+                "distribuicao_rpa": distribuicao_rpa,
+                "top_especies": top_especies_list
+            }
 
-    print(f"✅ Dados carregados!")
-else:
-    df_geral = None
-    print("⚠️ Dataset não encontrado!")
+        except Exception as e:
+            print(f"❌ Erro calculo: {e}")
+            metricas = None
+
+        print(f"✅ Dados carregados!")
+    else:
+        df_geral = None
+        print("⚠️ Dataset não encontrado ou vazio!")
 
 # ============================================
-# CORES
+# CORES (mantido o original)
 # ============================================
 COLORS = {
     'primary': '#10B981',
@@ -271,7 +298,7 @@ RPA_COLORS = {
 }
 
 # ============================================
-# FUNÇÃO DO FOOTER
+# FUNÇÃO DO FOOTER (mantida a original)
 # ============================================
 def render_footer():
     return html.Div([
@@ -337,7 +364,7 @@ def render_footer():
     ], style={'backgroundColor': '#111827', 'marginTop': 'auto'})
 
 # ============================================
-# LAYOUT
+# LAYOUT (mantido o original)
 # ============================================
 
 app.layout = html.Div([
@@ -377,7 +404,7 @@ app.layout = html.Div([
         ]),
         
         html.Div(id='tab-content', style={'marginTop': '2rem', 'marginBottom': '4rem'}),
-                 
+              
     ], fluid=True, style={
         'maxWidth': '1400px',
         'backgroundColor': COLORS['background'],
@@ -390,7 +417,7 @@ app.layout = html.Div([
 ], style={'backgroundColor': COLORS['background']})
 
 # ============================================
-# CALLBACKS
+# CALLBACKS (mantidos os originais)
 # ============================================
 
 @app.callback(
@@ -577,7 +604,7 @@ def render_dashboard():
                         ),
                     ], className="mb-3 d-flex align-items-center"),
                     
-                    dcc.Graph(id='grafico-rpa', figure=grafico_rpa, config={'displayModeBar': False}, style={'height': '300px'}),
+                    dcc.Graph(id='grafico-rpa', figure=criar_grafico_rpa(), config={'displayModeBar': False}, style={'height': '300px'}),
                     
                     dbc.Alert(texto_analise, color="light", style={'fontSize': '0.9rem', 'marginTop': '1rem'})
                 ], style={'padding': '0 1.5rem 1.5rem 1.5rem'})
@@ -585,7 +612,7 @@ def render_dashboard():
         ], width=12, lg=5, className="mb-4")
     ])
 
-    top_especies = criar_top_especies() if metricas.get('top_especies') else None
+    top_especies = criar_top_especies() if metricas and metricas.get('top_especies') else None
     
     return html.Div([
         html.H3("Indicadores Principais", className="mb-4"),
@@ -597,8 +624,11 @@ def render_dashboard():
     ])
 
 def gerar_mini_mapa():
+    """Gera o HTML do mapa de calor para o Dashboard (amostragem leve)"""
     if df_geral is None: return ""
-    df_sample = df_geral.sample(n=min(2000, len(df_geral)))
+    
+    # Amostragem leve para o mini-mapa
+    df_sample = df_geral.sample(n=min(2000, len(df_geral)), random_state=42)
     m = folium.Map(location=[-8.05, -34.90], zoom_start=11, control_scale=False, zoom_control=False)
     try:
         if 'latitude' in df_sample.columns and 'longitude' in df_sample.columns:
@@ -606,6 +636,7 @@ def gerar_mini_mapa():
             HeatMap(coords, radius=10, blur=15, gradient={0.4: 'blue', 0.65: 'lime', 1: 'red'}).add_to(m)
     except Exception as e:
         print(f"Erro no mini mapa: {e}")
+    
     return m._repr_html_()
 
 def criar_grafico_rpa(tipo='barras'):
@@ -665,7 +696,7 @@ def criar_top_especies():
             try:
                 with open(arquivo_local, 'rb') as f:
                     img_base64 = base64.b64encode(f.read()).decode()
-                    foto_url = f"data:image/png;base64,{img_base64}"
+                foto_url = f"data:image/png;base64,{img_base64}"
             except:
                 foto_url = fotos_fallback.get(nome, "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=400")
         else:
@@ -699,7 +730,7 @@ def render_mapa():
                 html.Div([
                     html.P("Total de árvores", style={'color': COLORS['gray'], 'fontSize': '0.875rem', 'marginBottom': '0.25rem'}),
                     html.H3(f"{len(df_geral):,}" if df_geral is not None else "---", 
-                            style={'color': COLORS['primary'], 'fontWeight': '700', 'marginBottom': '1.5rem'})
+                             style={'color': COLORS['primary'], 'fontWeight': '700', 'marginBottom': '1.5rem'})
                 ]),
                 html.Hr(),
                 html.Div([
@@ -761,53 +792,82 @@ def render_mapa():
     [Input('tipo-mapa', 'value'), Input('filtro-rpa', 'value')]
 )
 def atualizar_mapa_folium(n_clicks, tipo_mapa, rpas_selecionadas):
+    """
+    Atualiza o mapa Folium. 
+    🌟 OTIMIZAÇÃO 2: Aplica amostragem condicional (heatmap vs marker) para limitar o processamento, 
+    focando em reduzir drasticamente a carga do MarkerCluster.
+    """
     if not n_clicks: return "", dbc.Alert("👆 Clique no botão 'Gerar Mapa' para visualizar", color="info"), "Mapa de Calor", "Todas RPAs"
-    if df_geral is None: return "", dbc.Alert("❌ Dataset não encontrado!", color="danger"), "Erro", "Erro"
+    if df_geral is None or len(df_geral) == 0: return "", dbc.Alert("❌ Dataset não encontrado ou vazio!", color="danger"), "Erro", "Erro"
+    
+    # 🌟 Configuração dos limites de amostragem
+    MAX_POINTS_HEATMAP = 20000  # Limite maior para Mapa de Calor
+    MAX_POINTS_MARKER = 5000     # Limite menor para MarkerCluster (reduz a carga JS/memória)
+    
     try:
         df_mapa = df_geral.copy()
         
+        # 1. Aplicar filtro de RPA
         if rpas_selecionadas and 'rpa' in df_mapa.columns:
+            # Converte valores selecionados para números inteiros para o filtro
             rpas_int = [int(r) for r in rpas_selecionadas]
             df_mapa = df_mapa[df_mapa['rpa'].isin(rpas_int)].copy()
             
+        # 2. Aplicar filtro de coordenadas (limite da cidade)
         df_mapa = df_mapa[
             (df_mapa['latitude'].between(-8.2, -7.9)) & 
             (df_mapa['longitude'].between(-35.1, -34.8))
         ].copy()
         
         total_pontos = len(df_mapa)
-        if total_pontos == 0: return "", dbc.Alert("❌ Nenhum ponto encontrado!", color="warning"), tipo_mapa, f"{len(rpas_selecionadas)} RPAs"
+        if total_pontos == 0: 
+            return "", dbc.Alert("❌ Nenhum ponto encontrado com os filtros aplicados!", color="warning"), tipo_mapa, f"{len(rpas_selecionadas)} RPAs"
         
+        # 3. Aplicar amostragem condicional
+        if tipo_mapa == 'heatmap':
+            MAX_LIMIT = MAX_POINTS_HEATMAP
+        else:
+            MAX_LIMIT = MAX_POINTS_MARKER
+            
+        df_amostra = df_mapa
+        amostra_info = ""
+        info_color = "success"
+        
+        if total_pontos > MAX_LIMIT:
+            df_amostra = df_mapa.sample(n=MAX_LIMIT, random_state=42)
+            amostra_info = html.Span(f" (Exibindo amostra de {MAX_LIMIT:,} pontos)")
+            info_color = "warning"
+
         mapa = folium.Map(location=[-8.05, -34.93], zoom_start=11, tiles='OpenStreetMap', control_scale=True)
         badge_tipo = "Mapa de Calor" if tipo_mapa == 'heatmap' else "Marcadores"
         badge_rpas = "Todas RPAs" if len(rpas_selecionadas) == 6 else f"{len(rpas_selecionadas)} RPA(s)"
         
         if tipo_mapa == 'heatmap':
-            coordenadas = df_mapa[['latitude', 'longitude']].dropna().values.tolist()
+            # Usa a amostra para o HeatMap
+            coordenadas = df_amostra[['latitude', 'longitude']].dropna().values.tolist()
             HeatMap(coordenadas, radius=10, blur=15, gradient={0.4: 'blue', 0.65: 'lime', 0.8: 'yellow', 1.0: 'red'}).add_to(mapa)
-            info = dbc.Alert([html.Strong(f"✅ {total_pontos:,} árvores "), html.Span("visualizadas")], color="success")
+            info = dbc.Alert([html.Strong(f"✅ {total_pontos:,} árvores "), amostra_info], color=info_color)
         else:
+            # Usa a amostra para os Marcadores (cluster)
             marker_cluster = MarkerCluster(name="Árvores", overlay=True, control=True, show=True).add_to(mapa)
             
-            if total_pontos > 10000:
-                df_sample = df_mapa.sample(n=10000, random_state=42)
-                info = dbc.Alert([html.Strong(f"📍 10.000 de {total_pontos:,} árvores "), html.Span("(amostra para performance)")], color="warning")
-            else:
-                df_sample = df_mapa
-                info = dbc.Alert([html.Strong(f"✅ {total_pontos:,} árvores "), html.Span("visualizadas")], color="success")
-
-            for idx, row in df_sample.iterrows():
+            for idx, row in df_amostra.iterrows():
+                # Nota: A pop-up seria útil, mas aumenta o peso. Mantido simples para performance.
                 folium.CircleMarker(location=[row['latitude'], row['longitude']], radius=4, color='green', fill=True, fillColor='green', fillOpacity=0.7, weight=1).add_to(marker_cluster)
                 
+            info = dbc.Alert([html.Strong(f"✅ {total_pontos:,} árvores "), amostra_info], color=info_color)
+            
         return mapa._repr_html_(), info, badge_tipo, badge_rpas
-    except Exception as e: return "", dbc.Alert(f"❌ Erro: {str(e)}", color="danger"), "Erro", "Erro"
+    except Exception as e: 
+        # Garante que o erro do Python não quebre a interface
+        return "", dbc.Alert(f"❌ Erro ao gerar mapa: {str(e)}", color="danger"), "Erro", "Erro"
 
 @app.callback(Output('filtro-rpa', 'value'), Input('btn-limpar-filtros', 'n_clicks'))
 def limpar_filtros(n_clicks):
     return ['1', '2', '3', '4', '5', '6']
 
 # ============================================
-# FUNÇÃO PARA TREINAR CLASSIFICADOR
+# FUNÇÃO PARA TREINAR CLASSIFICADOR (mantida a original)
 # ============================================
 
 def treinar_classificador():
@@ -875,7 +935,7 @@ def treinar_classificador():
         return None
 
 # ============================================
-# FUNÇÃO DE RENDERIZAÇÃO DA ANÁLISE
+# FUNÇÃO DE RENDERIZAÇÃO DA ANÁLISE (mantida a original)
 # ============================================
 
 def render_analise():
@@ -1087,7 +1147,7 @@ def render_tela_react():
         ], color="warning")
 
 # ============================================
-# ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS DO REACT
+# ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS DO REACT (mantidas as originais)
 # ============================================
 @server.route('/tela-react/')
 @server.route('/tela-react/<path:path>')
@@ -1119,7 +1179,7 @@ def serve_react_app(path='index.html'):
         return "Arquivo não encontrado", 404
 
 # ============================================
-# FUNÇÃO PARA GERAR DESCRIÇÃO DO GRÁFICO
+# FUNÇÃO PARA GERAR DESCRIÇÃO DO GRÁFICO (mantida a original)
 # ============================================
 
 def gerar_descricao_grafico(codigo, titulo_markdown, num_axes):
@@ -1195,7 +1255,7 @@ def gerar_descricao_grafico(codigo, titulo_markdown, num_axes):
     return descricao
 
 def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basica):
-    """Gera uma descrição detalhada com interpretação, impactos e implicações práticas"""
+    """Gera uma descrição detalhada com interpretação, impactos e implicações práticas (mantida a original)"""
     
     descricao_detalhada = []
     
@@ -1312,7 +1372,7 @@ def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basic
         impactos += "Árvores doentes ou em condições precárias representam riscos de queda, podem afetar outras árvores próximas e requerem intervenções urgentes que consomem recursos públicos."
     elif 'scatter' in codigo or 'scatterplot' in codigo:
         impactos = "Impactos práticos: Compreender relações entre variáveis permite prever comportamentos, identificar anomalias e otimizar estratégias de gestão. "
-        impactos += "Essas correlações podem orientar critérios de seleção de espécies, planejamento de plantios e identificação de árvores que necessitam atenção especial."
+        impactos += "Essas correlações podem orientar critérios de seleção de espécies, planejamento de plantios e identificação de árvores que necessitam de atenção especial."
     else:
         impactos = "Impactos práticos: A análise dos dados do censo arbóreo fornece base científica para tomada de decisões, alocação de recursos e desenvolvimento de políticas públicas eficazes. "
         impactos += "Essas informações são essenciais para gestão sustentável do patrimônio verde urbano e promoção de cidades mais saudáveis e resilientes."
@@ -1351,7 +1411,7 @@ def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basic
     return descricao_detalhada
 
 # ============================================
-# FUNÇÃO PARA EXTRAIR IMAGENS DO NOTEBOOK
+# FUNÇÃO PARA EXTRAIR IMAGENS DO NOTEBOOK (mantida a original)
 # ============================================
 
 def extrair_imagens_notebook():
@@ -1475,7 +1535,7 @@ def extrair_imagens_notebook():
     return imagens
 
 # ============================================
-# FUNÇÃO DE RENDERIZAÇÃO DO NOTEBOOK
+# FUNÇÃO DE RENDERIZAÇÃO DO NOTEBOOK (mantida a original)
 # ============================================
 
 if __name__ == '__main__':

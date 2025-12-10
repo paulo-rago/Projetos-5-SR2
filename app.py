@@ -1326,7 +1326,7 @@ def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basic
     elif 'heatmap' in codigo or 'heat map' in codigo:
         interpretacao = "O mapa de calor revela concentrações espaciais de árvores, identificando áreas com maior ou menor densidade arbórea. "
         interpretacao += "Áreas com alta concentração podem ter maior resiliência climática e qualidade ambiental, enquanto áreas com baixa concentração podem ser priorizadas para plantios. "
-            interpretacao += "Essa visualização é essencial para planejamento urbano e políticas de arborização estratégica."
+        interpretacao += "Essa visualização é essencial para planejamento urbano e políticas de arborização estratégica."
     
     elif 'fitossanid' in codigo or 'saude' in codigo or 'condicao' in codigo:
         interpretacao = "A condição fitossanitária é um indicador crítico da saúde do patrimônio arbóreo e do risco de quedas ou acidentes. "

@@ -23,7 +23,6 @@ debug.log
 
 # Node.js / React
 node_modules/
-tela/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

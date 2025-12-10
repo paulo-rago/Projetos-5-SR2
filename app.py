@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_001
+        if grafico_id == 'GRAFICO_001':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'Os histogramas mostram a distribuição das alturas, CAP e copas das árvores do Recife em diferentes etapas de limpeza e transformação dos dados. As visualizações permitem observar valores originais, dados com divisões para ajuste de escala e versões filtradas sem zeros ou valores inconsistentes.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'A análise das distribuições revela padrões importantes:\n\nAltura\n\nA distribuição original apresenta valores fora do padrão (outliers muito altos), o que justifica os ajustes posteriores.\n\nApós dividir valores por 100 e remover alturas iguais a zero, a distribuição se torna mais realista e compatível com a arborização urbana, concentrada principalmente entre 5 e 15 metros.\n\nO histograma final (altura_df_mod) indica um conjunto de árvores predominantemente de porte médio, com poucos indivíduos muito altos.\n\nCAP\n\nOs dados originais de CAP mostram valores extremamente elevados, alguns excedendo 400 cm, indicando erros de catalogação ou medidas excepcionais.\n\nApós remover CAP igual a zero e ajustar medições, a distribuição se estabiliza, concentrando-se entre 50 e 150 cm, condizente com troncos de árvores adultas.\n\nO padrão final reflete uma mistura de espécies jovens e adultas, típica de áreas urbanas com reposições contínuas.\n\nCopa\n\nA distribuição original evidencia valores desproporcionalmente altos em alguns registros, sugerindo anomalias.\n\nApós remover copas zeradas ou inconsistentes e filtrar valores acima de 20 m, a distribuição passa a refletir copas predominantemente entre 2 e 12 metros, que é compatível com o padrão de ruas e praças urbanas.\n\nO histograma final (copa_mod3) apresenta forte assimetria, indicando grande diversidade de espécies e condições de poda.\n\nConclusão analítica\n\nAs transformações aplicadas revelam que os dados brutos continham ruído significativo. Após limpeza e filtragem, emergem padrões que representam melhor a realidade da arborização do Recife: árvores majoritariamente de porte médio, com copa moderada e CAP variando amplamente conforme espécie e idade.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'A compreensão das distribuições é fundamental para:\n\nplanejar intervenções adequadas (como poda, remoção de risco e plantio);\n\ndimensionar equipes e custos de manutenção;\n\nidentificar espécies dominantes e sua maturidade;\n\ncorrigir inconsistências no censo arbóreo, melhorando diagnósticos futuros;\n\navaliar riscos estruturais, já que árvores com grande CAP ou copa ampla demandam atenção especial.\n\nA predominância de árvores de porte médio indica uma arborização relativamente jovem ou manejada frequentemente, o que pode impactar benefícios ambientais como sombra e conforto térmico.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'As versões filtradas dos dados representam melhor a realidade urbana e devem ser usadas para análises estatísticas ou modelagens preditivas.\n\nA remoção de valores zero e a correção de escalas são passos essenciais para evitar distorções em análises posteriores, como correlações ou regressões.\n\nÁrvores de porte grande são minoria — fato que pode orientar reposições e planejamentos de espécies mais adequadas ao espaço disponível.\n\nA análise detalhada das distribuições permite identificar erros de medição, outliers e padrões estruturais, contribuindo para uma gestão arbórea mais estratégica, segura e eficiente.\n\nSíntese:\nA organização dimensional do acervo arbóreo é essencial para orientar políticas públicas, garantir manejo preventivo e ampliar os benefícios ambientais nas áreas urbanas do Recife.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_007
         if grafico_id == 'GRAFICO_007':
             # Análise estruturada por seções

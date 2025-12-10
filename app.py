@@ -1208,6 +1208,55 @@ def _render_notebook_graficos():
                     ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
                 )
         
+        # Adiciona análise específica para GRAFICO_006
+        if grafico_id == 'GRAFICO_006':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O conjunto de gráficos avalia se os resíduos de um modelo de regressão atendem aos pressupostos básicos:\n(1) média zero, (2) variância constante (homocedasticidade) e (3) distribuição aproximadamente normal.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': '1️⃣ Resíduos vs Valores Preditos\n\nO que o gráfico mostra:\nO gráfico exibe os resíduos distribuídos em relação aos valores preditos da variável resposta (Copa).\nA linha pontilhada representa o nível zero do resíduo.\n\nInterpretação:\nObserva-se um padrão triangular/abaulado, onde a dispersão dos resíduos aumenta conforme o valor predito cresce.\nIsso indica heterocedasticidade: os erros não possuem variância constante.\nHá faixas diagonais com maior densidade de pontos, sugerindo possíveis restrições nas variáveis ou agrupamentos naturais dos dados.\nA média dos resíduos parece estar próxima de zero, mas a variabilidade não é uniforme.\n\nConclusão:\nO modelo parece apresentar violação da homocedasticidade, o que reduz a qualidade das inferências estatísticas (ex.: intervalos de confiança e testes).\n\n2️⃣ Histograma dos Resíduos\n\nO que o gráfico mostra:\nO histograma apresenta a distribuição dos resíduos, juntamente com uma curva suavizada (KDE).\n\nInterpretação:\nA distribuição é aproximadamente simétrica, mas não perfeitamente normal.\nHá leve concentração na região central (entre -2 e 2), mas também existe:\ncauda mais alongada à direita,\nalguns valores mais extremos (outliers) tanto à direita quanto à esquerda.\nA forma geral é parecida com uma normal, mas com pequenas distorções.\n\nConclusão:\nOs resíduos mostram uma quase-normalidade, mas com pequenas assimetrias e presença de valores extremos.\nIsso não invalida o modelo, porém indica que o ajuste não é perfeito.\n\n3️⃣ Q-Q Plot (Normalidade)\n\nO que o gráfico mostra:\nO Q-Q plot compara os quantis dos resíduos com os quantis esperados de uma distribuição normal.\n\nInterpretação:\nA parte central dos pontos está bem alinhada com a linha teórica → boa aderência à normalidade nesta região.\nNas extremidades (caudas), os pontos se afastam da linha:\nCauda inferior mais dispersa,\nCauda superior com resíduos mais altos que o esperado.\nIsso confirma a presença de pequenas distorções na normalidade, principalmente nos valores extremos.\n\nConclusão:\nA distribuição dos resíduos é quase normal, mas com desvios nas caudas, o que confirma o visto no histograma.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'A avaliação dos pressupostos de regressão é fundamental para:\n\nvalidar a confiabilidade das inferências estatísticas do modelo,\n\nidentificar limitações que podem afetar a qualidade das predições,\n\nguiar melhorias no modelo (transformações, remoção de outliers, modelos alternativos).\n\nAs violações observadas (especialmente a heterocedasticidade) indicam que o modelo requer ajustes ou considerações metodológicas adicionais para garantir resultados mais robustos.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'Os resultados indicam que:\n\nO modelo apresenta violação da homocedasticidade, reduzindo a confiabilidade dos intervalos de confiança e testes de hipótese.\n\nOs resíduos seguem aproximadamente uma distribuição normal, mas com pequenas assimetrias e presença de outliers.\n\nO Q-Q plot confirma desvios nas caudas da distribuição.\n\nRecomendações:\n\nConsiderar transformações nas variáveis (log, raiz quadrada) para estabilizar a variância.\n\nInvestigar e possivelmente remover outliers ou tratar valores extremos.\n\nAvaliar modelos alternativos (regressão robusta, modelos não-paramétricos) que sejam menos sensíveis a violações de pressupostos.\n\nApesar das limitações identificadas, o modelo pode ser útil para análises exploratórias e compreensão de tendências gerais, mas requer cautela na interpretação de resultados inferenciais.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_005
         if grafico_id == 'GRAFICO_005':
             # Análise estruturada por seções

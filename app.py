@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_008
+        if grafico_id == 'GRAFICO_008':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'Os gráficos apresentam a distribuição espacial das árvores mapeadas na cidade do Recife, mostrando sua localização tanto em coordenadas geográficas (longitude e latitude) quanto em coordenadas projetadas (x e y, sistema UTM).\nEles permitem visualizar a área urbana coberta pelo levantamento e identificar a densidade espacial dos pontos onde existem registros de arborização.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'A visualização evidencia como as árvores estão distribuídas pelo território recifense, destacando regiões com maior ou menor concentração de registros.\nA comparação entre o sistema geográfico e o sistema projetado demonstra que a conversão de coordenadas mantém a forma e a posição espacial, permitindo validar a consistência dos dados.\n\nEsses mapas não mostram informações específicas das árvores (como espécies, altura ou estado), mas sim a abrangência e a continuidade do levantamento espacial.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'Do ponto de vista de gestão urbana, compreender a distribuição espacial das árvores é fundamental para:\n\nidentificar áreas com maior adensamento arbóreo,\n\nreconhecer regiões carentes de arborização,\n\napoiar o planejamento de novos plantios,\n\norientar ações de manutenção e monitoramento do patrimônio arbóreo.\n\nEsse tipo de mapeamento é essencial para políticas públicas de arborização, infraestrutura verde e qualidade ambiental.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'Os gráficos confirmam que o levantamento cobre boa parte da malha urbana, permitindo análises posteriores mais detalhadas, como diversidade de espécies, saúde das árvores e prioridades de intervenção.\nCom base na distribuição espacial observada, é possível:\n\nplanejar de forma mais eficiente corredores verdes,\n\npriorizar áreas com baixa cobertura vegetal,\n\napoiar ações de manejo e conservação.\n\nA representação espacial é, portanto, um passo inicial crucial para qualquer projeto de gestão e análise da arborização urbana.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_005
         if grafico_id == 'GRAFICO_005':
             # Análise estruturada por seções

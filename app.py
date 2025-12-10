@@ -966,10 +966,24 @@ def _render_notebook_graficos():
         descricao_detalhada = img_info.get('descricao_detalhada', [])
         num_axes = img_info.get('num_axes', 1)
         
-        # Limpa o título removendo tags HTML e caracteres especiais
-        titulo_limpo = titulo.replace('<Figure size ', '').replace(' with ', ' - ').replace(' Axes>', ' eixos').replace(' Axe>', ' eixo').replace('>', '')
-        if titulo_limpo.startswith('<'):
-            titulo_limpo = f"Visualização {idx + 1}"
+        # Verifica se é o gráfico de correlação entre Altura, Copa e DAP com 2 eixos
+        # Identifica pelo texto personalizado na descrição detalhada
+        eh_grafico_correlacao = False
+        if num_axes == 2 and descricao_detalhada:
+            # Verifica se a primeira seção contém o texto personalizado sobre matriz de correlação
+            primeira_secao = descricao_detalhada[0] if len(descricao_detalhada) > 0 else {}
+            texto_primeira = primeira_secao.get('texto', '')
+            if 'matriz de correlação entre três medidas dendrométricas' in texto_primeira.lower():
+                eh_grafico_correlacao = True
+        
+        # Define o título personalizado para o gráfico de correlação
+        if eh_grafico_correlacao:
+            titulo_limpo = "Correlação entre medidas dendrométricas"
+        else:
+            # Limpa o título removendo tags HTML e caracteres especiais
+            titulo_limpo = titulo.replace('<Figure size ', '').replace(' with ', ' - ').replace(' Axes>', ' eixos').replace(' Axe>', ' eixo').replace('>', '')
+            if titulo_limpo.startswith('<'):
+                titulo_limpo = f"Visualização {idx + 1}"
         
         # Gráficos com múltiplos eixos (subplots) ocupam largura total
         # Se tiver mais de 1 eixo, usa largura total (12), senão usa metade (6)
@@ -1249,6 +1263,39 @@ def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basic
     """Gera uma descrição detalhada com interpretação, impactos e implicações práticas (mantida a original)"""
     
     descricao_detalhada = []
+    
+    # Verifica se é o gráfico de correlação entre Altura, Copa e DAP com 2 eixos (600x500)
+    eh_grafico_correlacao = (
+        num_axes == 2 and 
+        ('correlação' in codigo or 'correlacao' in codigo or (titulo_markdown and 'correlação' in titulo_markdown.lower())) and
+        ('altura' in codigo or (titulo_markdown and 'altura' in titulo_markdown.lower())) and
+        ('copa' in codigo or (titulo_markdown and 'copa' in titulo_markdown.lower())) and
+        ('dap' in codigo or (titulo_markdown and 'dap' in titulo_markdown.lower()))
+    )
+    
+    if eh_grafico_correlacao:
+        # Texto personalizado para o gráfico de correlação
+        descricao_detalhada.append({
+            'titulo': 'O que o gráfico evidencia',
+            'texto': 'O gráfico apresenta a matriz de correlação entre três medidas dendrométricas — Altura, Copa e DAP — referentes às árvores de um bairro do Recife. Ele mostra o quanto cada par de variáveis está linearmente associado.'
+        })
+        
+        descricao_detalhada.append({
+            'titulo': 'Interpretação e análise',
+            'texto': 'A correlação evidencia que:\n\nAltura × DAP → r = 0.75\nHá uma correlação forte, indicando que árvores mais altas tendem a apresentar troncos de maior diâmetro. Isso é esperado em árvores urbanas onde o crescimento vertical costuma acompanhar o espessamento do tronco.\n\nAltura × Copa → r = 0.48\nA relação é moderada, sugerindo que a expansão da copa não depende apenas da altura da árvore, mas também de fatores como espécie, idade, podas e limitações do ambiente urbano.\n\nCopa × DAP → r = 0.48\nTambém apresenta correlação moderada, indicando que o desenvolvimento da copa não cresce necessariamente na mesma proporção do diâmetro do tronco — novamente refletindo influência de manejo e restrições do espaço urbano.\n\nEssas correlações estão alinhadas ao comportamento esperado em áreas urbanas, onde podas e infraestrutura condicionam o crescimento natural das árvores.'
+        })
+        
+        descricao_detalhada.append({
+            'titulo': 'Impactos e relevância',
+            'texto': 'Compreender essas relações é fundamental para:\n\nplanejar podas de maneira adequada, evitando cortes excessivos em árvores que já possuem copa reduzida;\n\nprever riscos estruturais, já que troncos mais espessos (DAP maior) estão associados ao maior porte geral das árvores;\n\norientar ações de manejo e plantio, como escolha de espécies compatíveis com o espaço disponível.\n\nA correlação forte entre altura e DAP reforça que essas variáveis podem ser usadas para modelagem preditiva e estimativa de biomassa ou estabilidade da árvore.'
+        })
+        
+        descricao_detalhada.append({
+            'titulo': 'Implicações práticas e conclusões',
+            'texto': 'A análise de correlação mostra que:\n\nO DAP é uma métrica confiável para prever outras características estruturais.\n\nA copa, por ter correlação moderada, depende fortemente do manejo urbano (podas, conflitos com infraestrutura, espaço para crescimento).\n\nEssas relações ajudam a identificar onde o manejo precisa ser aprimorado e quais áreas podem ser priorizadas no planejamento de arborização.\n\nConclusão: compreender a correlação entre medidas dendrométricas permite um manejo mais eficiente, segura melhor alocação de recursos e contribui para um planejamento urbano ambientalmente mais sustentável e estrategicamente orientado.'
+        })
+        
+        return descricao_detalhada
     
     # Primeira parte: o que o gráfico evidencia
     descricao_detalhada.append({

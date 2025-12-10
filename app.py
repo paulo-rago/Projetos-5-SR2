@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_015
+        if grafico_id == 'GRAFICO_015':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'Este gráfico apresenta as espécies com maior altura média entre as árvores registradas no Bairro do Recife.\nA ordem mostra que:\n\nSapotí-do-mangue — maior altura média (~4 m).\n\nPalmeira-imperial — próxima de 4 m também.\n\nPau-ferro — atinge média pouco abaixo de 3,5 m.\n\nIpê-roxo — altura média intermediária (~3 m).\n\nIpê-amarelo — entre as menores médias (~2,5 m).'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'Há diferença entre frequência (Gráfico 014) e porte médio (Gráfico 015):\n\nAlgumas espécies são numerosas, mas não necessariamente altas (ex.: ipê-amarelo é muito frequente, mas com menor altura média).\n\nOutras possuem poucos indivíduos, porém atingem porte mais elevado (ex.: sapotí-do-mangue).\n\nA palmeira-imperial aparece entre as mais altas, condizente com sua morfologia característica.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'A variação na altura média tem impacto direto em:\n\nsombreamento,\n\nconforto térmico,\n\nocupação de espaço urbano,\n\nadequação a calçadas e fiação,\n\nplanejamento de vias arborizadas.\n\nEspécies mais altas, como palmeiras e sapotí-do-mangue, tendem a oferecer mais benefícios ambientais, mas exigem maior planejamento no plantio.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'Os dados indicam quais espécies:\n\ncontribuem mais para cobertura vegetal vertical,\n\ndemandam espaço adequado para pleno desenvolvimento,\n\npodem ser priorizadas em áreas amplas e evitadas em áreas restritas.\n\nA combinação entre a análise de frequência e altura média é essencial para planejar plantios equilibrados e garantir o desenvolvimento saudável do patrimônio arbóreo.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_014
         if grafico_id == 'GRAFICO_014':
             # Análise estruturada por seções

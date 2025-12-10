@@ -926,7 +926,11 @@ def treinar_classificador():
         return None
 
 # ============================================
-# FUNÇÃO DE RENDERIZAÇÃO DA ANÁLISE (mantida a original)
+# ANÁLISE ESTATÍSTICA - Gráficos sem descrições, apenas com IDs
+# ============================================
+
+# ============================================
+# FUNÇÃO DE RENDERIZAÇÃO DA ANÁLISE
 # ============================================
 
 def render_analise():
@@ -961,151 +965,37 @@ def _render_notebook_graficos():
     cards = []
     for idx, img_info in enumerate(imagens):
         img_base64 = img_info['imagem']
-        titulo = img_info['titulo']
-        descricao = img_info.get('descricao')
-        descricao_detalhada = img_info.get('descricao_detalhada', [])
+        grafico_id = img_info.get('id', f"GRAFICO_{idx + 1}")
         num_axes = img_info.get('num_axes', 1)
         
-        # Verifica se é o gráfico de matriz de confusão com 4 eixos
-        # Identifica pelo texto personalizado na descrição detalhada
-        eh_grafico_confusao = False
-        if num_axes == 4 and descricao_detalhada:
-            # Verifica se a primeira seção contém o texto personalizado sobre matriz de confusão
-            primeira_secao = descricao_detalhada[0] if len(descricao_detalhada) > 0 else {}
-            texto_primeira = primeira_secao.get('texto', '')
-            if 'avaliação de um modelo de classificação usado para distinguir árvores com copa normal e copa grande' in texto_primeira.lower():
-                eh_grafico_confusao = True
-        
-        # Verifica se é o gráfico de correlação entre Altura, Copa e DAP com 2 eixos
-        # Identifica pelo texto personalizado na descrição detalhada
-        eh_grafico_correlacao = False
-        if num_axes == 2 and descricao_detalhada:
-            # Verifica se a primeira seção contém o texto personalizado sobre matriz de correlação
-            primeira_secao = descricao_detalhada[0] if len(descricao_detalhada) > 0 else {}
-            texto_primeira = primeira_secao.get('texto', '')
-            if 'matriz de correlação entre três medidas dendrométricas' in texto_primeira.lower():
-                eh_grafico_correlacao = True
-        
-        # Define o título personalizado
-        if eh_grafico_confusao:
-            titulo_limpo = "Avaliação da Matriz de Confusão"
-        elif eh_grafico_correlacao:
-            titulo_limpo = "Correlação entre medidas dendrométricas"
-        else:
-            # Limpa o título removendo tags HTML e caracteres especiais
-            titulo_limpo = titulo.replace('<Figure size ', '').replace(' with ', ' - ').replace(' Axes>', ' eixos').replace(' Axe>', ' eixo').replace('>', '')
-            if titulo_limpo.startswith('<'):
-                titulo_limpo = f"Visualização {idx + 1}"
-        
-        # Gráficos com múltiplos eixos (subplots) ocupam largura total
-        # Se tiver mais de 1 eixo, usa largura total (12), senão usa metade (6)
+        # Largura da coluna
         col_width = 12 if num_axes > 1 else 6
         
-        # Verifica se o gráfico está sozinho na linha
-        esta_sozinho = False
+        # Offset para centralizar gráficos sozinhos
+        offset = 0
         if num_axes == 1:
-            # Verifica o gráfico anterior
-            anterior_tem_1_eixo = False
-            if idx > 0:
-                anterior_num_axes = imagens[idx - 1].get('num_axes', 1)
-                anterior_tem_1_eixo = anterior_num_axes == 1
-            
-            # Verifica o próximo gráfico
-            proximo_tem_1_eixo = False
-            if idx < len(imagens) - 1:
-                proximo_num_axes = imagens[idx + 1].get('num_axes', 1)
-                proximo_tem_1_eixo = proximo_num_axes == 1
-            
-            # Está sozinho se:
-            # - É o primeiro E o próximo não tem 1 eixo (ou não existe)
-            # - O anterior não tem 1 eixo E o próximo não tem 1 eixo (ou não existe)
-            # - É o último E o anterior não tem 1 eixo
+            esta_sozinho = False
             if idx == 0:
-                esta_sozinho = not proximo_tem_1_eixo
+                esta_sozinho = len(imagens) == 1 or imagens[idx + 1].get('num_axes', 1) != 1
             elif idx == len(imagens) - 1:
-                esta_sozinho = not anterior_tem_1_eixo
+                esta_sozinho = imagens[idx - 1].get('num_axes', 1) != 1
             else:
-                esta_sozinho = not anterior_tem_1_eixo and not proximo_tem_1_eixo
+                esta_sozinho = imagens[idx - 1].get('num_axes', 1) != 1 and imagens[idx + 1].get('num_axes', 1) != 1
+            
+            if esta_sozinho:
+                offset = 3
         
-        # Verifica se é o gráfico específico sobre distribuição das alturas
-        eh_grafico_alturas = num_axes == 1 and descricao and 'distribuição das alturas das árvores' in descricao.lower()
-        
-        # Offset para centralizar se estiver sozinho (offset de 3 = centraliza coluna de 6)
-        # Centraliza apenas o gráfico de alturas quando tiver 1 eixo
-        if eh_grafico_alturas:
-            offset = 3  # Centraliza gráfico de alturas
-        elif esta_sozinho and num_axes == 1:
-            offset = 3
-        else:
-            offset = 0
-        
-        # Ajusta altura máxima baseado no número de eixos
+        # Altura máxima
         max_height = '1000px' if num_axes > 3 else ('900px' if num_axes > 1 else '600px')
         
         # Conteúdo do card
         card_content = []
         
-        # Header com título
+        # Header com ID do gráfico
         card_content.append(
             dbc.CardHeader([
-                html.H6(titulo_limpo, className="m-0", style={'fontWeight': '600', 'fontSize': '0.95rem'})
+                html.H6(grafico_id, className="m-0", style={'fontWeight': '600', 'fontSize': '0.95rem'})
             ], style={'background': 'white', 'borderBottom': f'1px solid {COLORS["border"]}', 'padding': '1rem'})
-        )
-        
-        # Descrição detalhada (sempre exibida)
-        descricao_body = []
-        
-        if descricao_detalhada:
-            for secao in descricao_detalhada:
-                titulo_secao = secao.get('titulo', '')
-                texto_secao = secao.get('texto', '')
-                
-                if titulo_secao and texto_secao:
-                    descricao_body.append(
-                        html.Div([
-                            html.H6(
-                                titulo_secao,
-                                style={
-                                    'color': COLORS['dark'],
-                                    'fontSize': '0.95rem',
-                                    'fontWeight': '700',
-                                    'marginBottom': '0.5rem',
-                                    'marginTop': '1rem' if len(descricao_body) > 0 else '0'
-                                }
-                            ),
-                            html.P(
-                                texto_secao,
-                                style={
-                                    'color': COLORS['gray'],
-                                    'fontSize': '0.9rem',
-                                    'lineHeight': '1.8',
-                                    'marginBottom': '0.75rem',
-                                    'textAlign': 'justify'
-                                }
-                            )
-                        ])
-                    )
-        else:
-            # Fallback para descrição simples se não houver descrição detalhada
-            descricao_limpa = descricao.replace('**', '').replace('##', '').replace('#', '').strip() if descricao else "Este gráfico evidencia características das árvores no Recife"
-            descricao_body.append(
-                html.P(
-                    descricao_limpa,
-                    style={
-                        'color': COLORS['gray'],
-                        'fontSize': '0.9rem',
-                        'lineHeight': '1.6',
-                        'marginBottom': '1rem',
-                        'fontStyle': 'italic'
-                    }
-                )
-            )
-        
-        card_content.append(
-            dbc.CardBody(
-                descricao_body,
-                style={'padding': '1rem 1.5rem 0.5rem 1.5rem'}
-            )
         )
         
         # Imagem
@@ -1124,8 +1014,8 @@ def _render_notebook_graficos():
             ], style={'padding': '1.5rem', 'textAlign': 'center'})
         )
         
-        # Aplica offset se necessário para centralizar
-        col_class = f"mb-4"
+        # Aplica offset
+        col_class = "mb-4"
         if offset > 0:
             col_class += f" offset-lg-{offset}"
         
@@ -1196,314 +1086,14 @@ def serve_react_app(path='index.html'):
         return "Arquivo não encontrado", 404
 
 # ============================================
-# FUNÇÃO PARA GERAR DESCRIÇÃO DO GRÁFICO
-# ============================================
-
-def gerar_descricao_grafico(codigo, titulo_markdown, num_axes):
-    """Gera uma descrição descritiva sobre o que o gráfico mostra"""
-    
-    descricao = "Este gráfico evidencia "
-    
-    # Palavras-chave para identificar tipos de análise
-    if 'hist' in codigo or 'histogram' in codigo:
-        if 'altura' in codigo:
-            descricao += "a distribuição das alturas das árvores no Recife"
-        elif 'dap' in codigo:
-            descricao += "a distribuição do DAP (diâmetro à altura do peito) das árvores"
-        elif 'copa' in codigo:
-            descricao += "a distribuição do tamanho das copas das árvores"
-        elif 'rpa' in codigo:
-            descricao += "a distribuição das árvores por RPA (Região Político-Administrativa)"
-        else:
-            descricao += "a distribuição de uma característica das árvores no Recife"
-    
-    elif 'bar' in codigo or 'barplot' in codigo:
-        if 'especie' in codigo or 'nome_popular' in codigo:
-            descricao += "a quantidade de árvores por espécie no Recife"
-        elif 'rpa' in codigo:
-            descricao += "a quantidade de árvores por RPA no Recife"
-        elif 'bairro' in codigo:
-            descricao += "a quantidade de árvores por bairro no Recife"
-        else:
-            descricao += "a comparação de quantidades entre diferentes categorias"
-    
-    elif 'pie' in codigo or 'pizza' in codigo:
-        if 'especie' in codigo or 'nome_popular' in codigo:
-            descricao += "a proporção de árvores por espécie no Recife"
-        elif 'rpa' in codigo:
-            descricao += "a proporção de árvores por RPA no Recife"
-        else:
-            descricao += "a proporção de distribuição de árvores por categoria"
-    
-    elif 'scatter' in codigo or 'scatterplot' in codigo:
-        if 'altura' in codigo and 'dap' in codigo:
-            descricao += "a relação entre altura e DAP das árvores"
-        else:
-            descricao += "a relação entre duas variáveis das árvores"
-    
-    elif 'box' in codigo or 'boxplot' in codigo:
-        descricao += "a distribuição e variabilidade de características das árvores"
-    
-    elif 'heatmap' in codigo or 'heat map' in codigo:
-        descricao += "a concentração e distribuição espacial das árvores no Recife"
-    
-    elif num_axes > 3:
-        descricao += "múltiplas análises estatísticas sobre diferentes características das árvores no Recife"
-    
-    elif 'distribu' in codigo or 'distribuição' in codigo:
-        descricao += "a distribuição espacial ou estatística das árvores no Recife"
-    
-    elif 'fitossanid' in codigo or 'saude' in codigo or 'condicao' in codigo:
-        descricao += "a condição fitossanitária das árvores no Recife"
-    
-    elif 'especie' in codigo or 'nome_popular' in codigo:
-        descricao += "informações sobre as espécies de árvores no Recife"
-    
-    elif 'rpa' in codigo:
-        descricao += "a distribuição das árvores por RPA no Recife"
-    
-    elif titulo_markdown:
-        # Usa o título markdown se disponível
-        descricao = f"Este gráfico evidencia {titulo_markdown.lower()}"
-    
-    else:
-        descricao += "características e padrões das árvores no Recife"
-    
-    return descricao
-
-def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basica):
-    """Gera uma descrição detalhada com interpretação, impactos e implicações práticas (mantida a original)"""
-    
-    descricao_detalhada = []
-    
-    # Verifica se é o gráfico de matriz de confusão com 4 eixos (1800x500)
-    eh_grafico_confusao = (
-        num_axes == 4 and 
-        ('confusion' in codigo or 'confusão' in codigo or 'confusao' in codigo or 
-         'roc' in codigo or 'precision' in codigo or 'recall' in codigo or
-         (titulo_markdown and ('confusão' in titulo_markdown.lower() or 'confusion' in titulo_markdown.lower())))
-    )
-    
-    # Verifica se é o gráfico de correlação entre Altura, Copa e DAP com 2 eixos (600x500)
-    eh_grafico_correlacao = (
-        num_axes == 2 and 
-        ('correlação' in codigo or 'correlacao' in codigo or (titulo_markdown and 'correlação' in titulo_markdown.lower())) and
-        ('altura' in codigo or (titulo_markdown and 'altura' in titulo_markdown.lower())) and
-        ('copa' in codigo or (titulo_markdown and 'copa' in titulo_markdown.lower())) and
-        ('dap' in codigo or (titulo_markdown and 'dap' in titulo_markdown.lower()))
-    )
-    
-    if eh_grafico_confusao:
-        # Texto personalizado para o gráfico de matriz de confusão
-        descricao_detalhada.append({
-            'titulo': 'O que o gráfico evidencia',
-            'texto': 'O conjunto de gráficos apresenta a avaliação de um modelo de classificação usado para distinguir árvores com copa normal e copa grande no Recife. A matriz de confusão quantifica os acertos e erros, enquanto as curvas ROC e Precision-Recall mostram o desempenho geral em diferentes limiares de decisão.'
-        })
-        
-        descricao_detalhada.append({
-            'titulo': 'Interpretação e análise',
-            'texto': 'Matriz de confusão\n\nNa base de teste:\n\n181 árvores com copa normal foram classificadas corretamente.\n\n46 árvores com copa grande foram identificadas corretamente.\n\n11 falsos positivos ocorreram (árvores normais classificadas como grandes).\n\n29 falsos negativos ocorreram (árvores grandes classificadas como normais).\n\nO número relativamente alto de falsos negativos sugere que o modelo é conservador: tende a rotular uma árvore como "grande" apenas quando há alta confiança, privilegiando a precisão sobre o recall.\n\nDesempenho geral (ROC e Precision-Recall)\n\nA curva ROC apresenta AUC = 0.93, indicando excelente capacidade discriminativa.\n\nA curva Precision-Recall mostra AP = 0.84, reafirmando bom desempenho mesmo com possível desbalanceamento entre classes.\n\nEsses resultados indicam que o modelo mantém bom equilíbrio entre erro e acerto, e que o limiar de decisão pode ser ajustado sem perda drástica de desempenho.'
-        })
-        
-        descricao_detalhada.append({
-            'titulo': 'Impactos e relevância',
-            'texto': 'A classificação do porte da copa tem aplicações diretas na gestão urbana:\n\nPriorização de podas e vistorias, especialmente para árvores grandes que podem representar risco em áreas adensadas.\n\nRacionalização de equipes e recursos, direcionando intervenções para locais de maior probabilidade de ocorrência de copas grandes.\n\nApoio ao planejamento urbano, ao identificar padrões de desenvolvimento arbóreo em diferentes bairros.\n\nAlém disso, o bom desempenho do modelo reforça a utilidade de métricas dendrométricas—especialmente CAP e DAP como indicadores estruturais.'
-        })
-        
-        descricao_detalhada.append({
-            'titulo': 'Implicações práticas e conclusões',
-            'texto': 'Os resultados sugerem que:\n\nO CAP continua sendo um forte preditor do porte da copa e se mostra adequado como variável explicativa.\n\nO modelo é tecnicamente robusto, mas seu limiar pode — e deve — ser ajustado conforme o objetivo operacional:\n\nMaior recall caso a prioridade seja não deixar árvores grandes passarem despercebidas, aumentando segurança em vias públicas.\n\nMaior precisão caso se deseje evitar inspeções desnecessárias e otimizar custos.\n\nRecomendação\n\nPara aplicações voltadas à segurança e prevenção de riscos, recomenda-se ajustar o limiar para aumentar o recall, mesmo que isso gere leve aumento nos falsos positivos.\nIsso reduz a chance de árvores grandes deixarem de ser inspecionadas, o que é crucial em áreas urbanas vulneráveis a quedas, ventos fortes e estresse ambiental.'
-        })
-        
-        return descricao_detalhada
-    
-    if eh_grafico_correlacao:
-        # Texto personalizado para o gráfico de correlação
-        descricao_detalhada.append({
-            'titulo': 'O que o gráfico evidencia',
-            'texto': 'O gráfico apresenta a matriz de correlação entre três medidas dendrométricas — Altura, Copa e DAP — referentes às árvores de um bairro do Recife. Ele mostra o quanto cada par de variáveis está linearmente associado.'
-        })
-        
-        descricao_detalhada.append({
-            'titulo': 'Interpretação e análise',
-            'texto': 'A correlação evidencia que:\n\nAltura × DAP → r = 0.75\nHá uma correlação forte, indicando que árvores mais altas tendem a apresentar troncos de maior diâmetro. Isso é esperado em árvores urbanas onde o crescimento vertical costuma acompanhar o espessamento do tronco.\n\nAltura × Copa → r = 0.48\nA relação é moderada, sugerindo que a expansão da copa não depende apenas da altura da árvore, mas também de fatores como espécie, idade, podas e limitações do ambiente urbano.\n\nCopa × DAP → r = 0.48\nTambém apresenta correlação moderada, indicando que o desenvolvimento da copa não cresce necessariamente na mesma proporção do diâmetro do tronco — novamente refletindo influência de manejo e restrições do espaço urbano.\n\nEssas correlações estão alinhadas ao comportamento esperado em áreas urbanas, onde podas e infraestrutura condicionam o crescimento natural das árvores.'
-        })
-        
-        descricao_detalhada.append({
-            'titulo': 'Impactos e relevância',
-            'texto': 'Compreender essas relações é fundamental para:\n\nplanejar podas de maneira adequada, evitando cortes excessivos em árvores que já possuem copa reduzida;\n\nprever riscos estruturais, já que troncos mais espessos (DAP maior) estão associados ao maior porte geral das árvores;\n\norientar ações de manejo e plantio, como escolha de espécies compatíveis com o espaço disponível.\n\nA correlação forte entre altura e DAP reforça que essas variáveis podem ser usadas para modelagem preditiva e estimativa de biomassa ou estabilidade da árvore.'
-        })
-        
-        descricao_detalhada.append({
-            'titulo': 'Implicações práticas e conclusões',
-            'texto': 'A análise de correlação mostra que:\n\nO DAP é uma métrica confiável para prever outras características estruturais.\n\nA copa, por ter correlação moderada, depende fortemente do manejo urbano (podas, conflitos com infraestrutura, espaço para crescimento).\n\nEssas relações ajudam a identificar onde o manejo precisa ser aprimorado e quais áreas podem ser priorizadas no planejamento de arborização.\n\nConclusão: compreender a correlação entre medidas dendrométricas permite um manejo mais eficiente, segura melhor alocação de recursos e contribui para um planejamento urbano ambientalmente mais sustentável e estrategicamente orientado.'
-        })
-        
-        return descricao_detalhada
-    
-    # Primeira parte: o que o gráfico evidencia
-    descricao_detalhada.append({
-        'titulo': 'O que o gráfico evidencia',
-        'texto': descricao_basica
-    })
-    
-    # Segunda parte: interpretação e análise
-    interpretacao = ""
-    
-    if 'hist' in codigo or 'histogram' in codigo:
-        if 'altura' in codigo:
-            interpretacao = "A análise da distribuição de alturas revela padrões importantes sobre o perfil arbóreo da cidade. "
-            interpretacao += "Árvores muito altas podem representar riscos em áreas urbanas, enquanto árvores muito baixas podem indicar plantios recentes ou espécies de menor porte. "
-            interpretacao += "A concentração em determinadas faixas de altura sugere políticas de plantio específicas ou características naturais das espécies predominantes."
-        elif 'dap' in codigo:
-            interpretacao = "A distribuição do DAP (diâmetro à altura do peito) fornece insights sobre a idade e maturidade do patrimônio arbóreo. "
-            interpretacao += "Árvores com DAP maior geralmente são mais antigas e estabelecidas, oferecendo mais benefícios ecológicos, mas também requerendo mais cuidados. "
-            interpretacao += "A predominância de árvores jovens (DAP menor) pode indicar programas de reflorestamento recentes ou necessidade de planejamento para substituição."
-        elif 'copa' in codigo:
-            interpretacao = "O tamanho das copas está diretamente relacionado à capacidade de sombreamento, redução de temperatura urbana e absorção de poluentes. "
-            interpretacao += "Copas maiores oferecem mais benefícios ambientais, mas também podem causar conflitos com infraestrutura urbana. "
-            interpretacao += "A distribuição revela o potencial de serviços ecossistêmicos e ajuda a identificar áreas que necessitam de mais cobertura arbórea."
-        elif 'rpa' in codigo:
-            interpretacao = "A distribuição por RPA evidencia desigualdades na arborização urbana entre diferentes regiões da cidade. "
-            interpretacao += "RPAs com menor densidade arbórea podem ter maior vulnerabilidade a ilhas de calor e menor qualidade de vida. "
-            interpretacao += "Essa análise é fundamental para direcionar políticas públicas de plantio e manutenção de forma equitativa."
-        else:
-            interpretacao = "A distribuição desta característica revela padrões importantes sobre a composição e estrutura do patrimônio arbóreo urbano. "
-            interpretacao += "Identificar concentrações e variações ajuda a entender a dinâmica da arborização e a planejar intervenções estratégicas."
-    
-    elif 'bar' in codigo or 'barplot' in codigo:
-        if 'especie' in codigo or 'nome_popular' in codigo:
-            interpretacao = "A diversidade de espécies é um indicador importante da resiliência ecológica e da qualidade do ecossistema urbano. "
-            interpretacao += "A predominância de poucas espécies pode indicar vulnerabilidade a pragas ou doenças específicas. "
-            interpretacao += "Espécies nativas geralmente são mais adaptadas ao clima local e oferecem mais benefícios à fauna, enquanto espécies exóticas podem ter vantagens em ambientes urbanos. "
-            interpretacao += "Essa análise é crucial para planejar plantios futuros que promovam biodiversidade e sustentabilidade."
-        elif 'rpa' in codigo:
-            interpretacao = "A distribuição desigual de árvores entre RPAs reflete históricos diferentes de urbanização e políticas públicas. "
-            interpretacao += "Regiões centrais podem ter menos espaço para arborização, enquanto áreas periféricas podem ter mais oportunidades de plantio. "
-            interpretacao += "Essa informação é essencial para programas de equidade ambiental e planejamento urbano sustentável."
-        elif 'bairro' in codigo:
-            interpretacao = "A variação entre bairros pode estar relacionada a fatores socioeconômicos, histórico de desenvolvimento urbano e políticas locais. "
-            interpretacao += "Bairros com menor arborização podem ter maior necessidade de intervenção para melhorar qualidade de vida e resiliência climática."
-        else:
-            interpretacao = "A comparação entre categorias revela disparidades e padrões que podem orientar políticas públicas e ações de gestão ambiental."
-    
-    elif 'pie' in codigo or 'pizza' in codigo:
-        if 'especie' in codigo or 'nome_popular' in codigo:
-            interpretacao = "A proporção de espécies indica o nível de diversidade biológica e a dependência do ecossistema urbano de poucas espécies dominantes. "
-            interpretacao += "Uma alta concentração em poucas espécies aumenta o risco de perdas significativas em caso de doenças ou eventos climáticos extremos. "
-            interpretacao += "Promover maior diversidade através de plantios estratégicos pode aumentar a resiliência do patrimônio arbóreo."
-        elif 'rpa' in codigo:
-            interpretacao = "A proporção por RPA mostra como os recursos arbóreos estão distribuídos espacialmente na cidade. "
-            interpretacao += "Desigualdades significativas podem indicar necessidade de políticas redistributivas e investimentos direcionados em áreas menos arborizadas."
-        else:
-            interpretacao = "A análise proporcional ajuda a entender a estrutura e composição do patrimônio arbóreo, identificando desequilíbrios e oportunidades de melhoria."
-    
-    elif 'scatter' in codigo or 'scatterplot' in codigo:
-        if 'altura' in codigo and 'dap' in codigo:
-            interpretacao = "A relação entre altura e DAP revela padrões de crescimento e desenvolvimento das árvores urbanas. "
-            interpretacao += "Correlações fortes indicam crescimento proporcional esperado, enquanto desvios podem sinalizar condições ambientais adversas, competição por recursos ou problemas fitossanitários. "
-            interpretacao += "Essa análise é valiosa para identificar árvores que podem necessitar de atenção especial ou que estão crescendo em condições subótimas."
-        else:
-            interpretacao = "A relação entre variáveis ajuda a identificar correlações, tendências e padrões que podem não ser evidentes em análises isoladas. "
-            interpretacao += "Compreender essas relações é fundamental para gestão eficiente e tomada de decisões baseadas em evidências."
-    
-    elif 'box' in codigo or 'boxplot' in codigo:
-        interpretacao = "Os boxplots revelam a variabilidade, distribuição e presença de valores atípicos (outliers) nas características analisadas. "
-        interpretacao += "Valores atípicos podem indicar árvores excepcionais, problemas de medição ou condições especiais que merecem investigação. "
-        interpretacao += "A variabilidade entre grupos ajuda a identificar fatores que influenciam o desenvolvimento arbóreo e a planejar intervenções direcionadas."
-    
-    elif 'heatmap' in codigo or 'heat map' in codigo:
-        interpretacao = "O mapa de calor revela concentrações espaciais de árvores, identificando áreas com maior ou menor densidade arbórea. "
-        interpretacao += "Áreas com alta concentração podem ter maior resiliência climática e qualidade ambiental, enquanto áreas com baixa concentração podem ser priorizadas para plantios. "
-        interpretacao += "Essa visualização é essencial para planejamento urbano e políticas de arborização estratégica."
-    
-    elif 'fitossanid' in codigo or 'saude' in codigo or 'condicao' in codigo:
-        interpretacao = "A condição fitossanitária é um indicador crítico da saúde do patrimônio arbóreo e do risco de quedas ou acidentes. "
-        interpretacao += "Árvores em condições precárias representam riscos à segurança pública e podem indicar necessidade de podas, tratamentos ou substituições. "
-        interpretacao += "Monitorar e melhorar a saúde arbórea é essencial para garantir segurança, longevidade e benefícios contínuos à população."
-    
-    elif num_axes > 3:
-        interpretacao = "A análise multivariada permite examinar múltiplas dimensões simultaneamente, revelando padrões complexos e interações entre diferentes características. "
-        interpretacao += "Essa abordagem abrangente é valiosa para compreensão holística do patrimônio arbóreo e para planejamento estratégico de gestão."
-    
-    else:
-        interpretacao = "A análise dos dados revela padrões importantes sobre a arborização urbana que podem orientar políticas públicas, "
-        interpretacao += "planejamento urbano e ações de gestão ambiental para promover cidades mais sustentáveis e resilientes."
-    
-    if interpretacao:
-        descricao_detalhada.append({
-            'titulo': 'Interpretação e análise',
-            'texto': interpretacao
-        })
-    
-    # Terceira parte: impactos e relevância
-    impactos = ""
-    
-    if 'altura' in codigo or 'dap' in codigo or 'copa' in codigo:
-        impactos = "Impactos práticos: O conhecimento sobre dimensões arbóreas permite planejar podas preventivas, evitar conflitos com infraestrutura (fiação, calçadas, prédios) e otimizar recursos de manutenção. "
-        impactos += "Árvores maiores oferecem mais benefícios ambientais (sombra, redução de temperatura, sequestro de carbono), mas também requerem mais cuidados e podem representar maiores riscos se não forem adequadamente mantidas."
-    elif 'especie' in codigo or 'nome_popular' in codigo:
-        impactos = "Impactos práticos: A diversidade de espécies afeta a resiliência do ecossistema urbano, a atração de fauna, e a capacidade de adaptação a mudanças climáticas. "
-        impactos += "Espécies nativas geralmente são mais adaptadas e oferecem mais benefícios ecológicos, enquanto a diversidade reduz vulnerabilidade a pragas e doenças específicas."
-    elif 'rpa' in codigo or 'bairro' in codigo:
-        impactos = "Impactos práticos: Desigualdades na distribuição arbórea afetam diretamente a qualidade de vida, saúde pública e resiliência climática em diferentes regiões. "
-        impactos += "Áreas menos arborizadas podem ter maior incidência de ilhas de calor, menor qualidade do ar e menor bem-estar da população. "
-        impactos += "Essas informações são fundamentais para políticas de equidade ambiental e planejamento urbano inclusivo."
-    elif 'fitossanid' in codigo or 'saude' in codigo or 'condicao' in codigo:
-        impactos = "Impactos práticos: A saúde arbórea está diretamente relacionada à segurança pública, custos de manutenção e longevidade do patrimônio verde. "
-        impactos += "Árvores doentes ou em condições precárias representam riscos de queda, podem afetar outras árvores próximas e requerem intervenções urgentes que consomem recursos públicos."
-    elif 'scatter' in codigo or 'scatterplot' in codigo:
-        impactos = "Impactos práticos: Compreender relações entre variáveis permite prever comportamentos, identificar anomalias e otimizar estratégias de gestão. "
-        impactos += "Essas correlações podem orientar critérios de seleção de espécies, planejamento de plantios e identificação de árvores que necessitam de atenção especial."
-    else:
-        impactos = "Impactos práticos: A análise dos dados do censo arbóreo fornece base científica para tomada de decisões, alocação de recursos e desenvolvimento de políticas públicas eficazes. "
-        impactos += "Essas informações são essenciais para gestão sustentável do patrimônio verde urbano e promoção de cidades mais saudáveis e resilientes."
-    
-    if impactos:
-        descricao_detalhada.append({
-            'titulo': 'Impactos e relevância',
-            'texto': impactos
-        })
-    
-    # Quarta parte: implicações práticas e conclusões
-    implicacoes = ""
-    
-    if 'hist' in codigo or 'histogram' in codigo:
-        implicacoes = "Implicações práticas: A distribuição observada pode orientar políticas de plantio (priorizando espécies de determinado porte), programas de poda preventiva e planejamento de substituição de árvores antigas. "
-        implicacoes += "Conclusão: Compreender a estrutura dimensional do patrimônio arbóreo é fundamental para gestão eficiente, segurança pública e maximização de benefícios ambientais."
-    elif 'bar' in codigo or 'barplot' in codigo or 'pie' in codigo:
-        implicacoes = "Implicações práticas: As disparidades identificadas podem orientar programas de plantio direcionados, políticas de equidade ambiental e alocação estratégica de recursos. "
-        implicacoes += "Conclusão: A análise comparativa revela oportunidades de melhoria e é essencial para planejamento urbano sustentável e inclusivo."
-    elif 'scatter' in codigo or 'scatterplot' in codigo:
-        implicacoes = "Implicações práticas: As correlações identificadas podem orientar critérios de seleção de espécies, identificação de árvores problemáticas e otimização de práticas de manejo. "
-        implicacoes += "Conclusão: Compreender relações entre variáveis melhora a capacidade de previsão e gestão proativa do patrimônio arbóreo."
-    elif 'fitossanid' in codigo or 'saude' in codigo or 'condicao' in codigo:
-        implicacoes = "Implicações práticas: A identificação de árvores em condições precárias permite priorizar intervenções, reduzir riscos à segurança pública e otimizar recursos de manutenção. "
-        implicacoes += "Conclusão: Monitoramento contínuo da saúde arbórea é essencial para garantir segurança, longevidade e benefícios contínuos à população."
-    else:
-        implicacoes = "Implicações práticas: Os padrões identificados fornecem base científica para políticas públicas, planejamento urbano e gestão ambiental estratégica. "
-        implicacoes += "Conclusão: A análise de dados do censo arbóreo é fundamental para promover cidades mais sustentáveis, resilientes e com melhor qualidade de vida."
-    
-    if implicacoes:
-        descricao_detalhada.append({
-            'titulo': 'Implicações práticas e conclusões',
-            'texto': implicacoes
-        })
-    
-    return descricao_detalhada
-
-# ============================================
-# FUNÇÃO PARA EXTRAIR IMAGENS DO NOTEBOOK
+# FUNÇÃO PARA EXTRAIR IMAGENS DO NOTEBOOK (SIMPLIFICADA)
 # ============================================
 
 def extrair_imagens_notebook():
-    """Extrai todas as imagens PNG dos outputs do notebook junto com descrições"""
+    """Extrai todas as imagens PNG dos outputs do notebook"""
     notebook_path = Path("notebook/Verdefica_Unificado_12nov2025.ipynb")
     imagens = []
     imagens_vistas = set()  # Para detectar duplicatas
-    
-    # Contadores para filtrar gráficos específicos
-    contador_rpa = 0  # Gráficos sobre quantidade de árvores por RPA
     
     if not notebook_path.exists():
         return imagens
@@ -1518,29 +1108,12 @@ def extrair_imagens_notebook():
             if cell.get('cell_type') == 'code':
                 outputs = cell.get('outputs', [])
                 
-                # Analisa o código da célula para entender o que o gráfico mostra
+                # Analisa o código da célula
                 source_code = cell.get('source', [])
                 if isinstance(source_code, list):
                     codigo_completo = ''.join(source_code).lower()
                 else:
                     codigo_completo = str(source_code).lower()
-                
-                # Busca títulos/descrições em células markdown anteriores
-                titulo_markdown = None
-                for i in range(max(0, cell_idx - 3), cell_idx):
-                    prev_cell = cells[i]
-                    if prev_cell.get('cell_type') == 'markdown':
-                        source = prev_cell.get('source', [])
-                        if isinstance(source, list):
-                            texto = ''.join(source).strip()
-                        else:
-                            texto = str(source).strip()
-                        # Remove formatação markdown
-                        texto_limpo = texto.replace('**', '').replace('##', '').replace('#', '').strip()
-                        # Pega títulos de seção (geralmente mais descritivos)
-                        if len(texto_limpo) > 10 and len(texto_limpo) < 100:
-                            titulo_markdown = texto_limpo
-                            break
                 
                 for output_idx, output in enumerate(outputs):
                     if output.get('output_type') == 'display_data':
@@ -1549,78 +1122,130 @@ def extrair_imagens_notebook():
                             img_data = data['image/png']
                             
                             # Verifica se a imagem já foi adicionada (remove duplicatas)
-                            # Usa hash MD5 completo da imagem para detectar duplicatas exatas
-                            # img_data já é uma string base64, então codificamos para bytes
                             img_hash = hashlib.md5(img_data.encode('utf-8') if isinstance(img_data, str) else img_data).hexdigest()
                             if img_hash in imagens_vistas:
-                                continue  # Pula imagens duplicadas
+                                continue
                             imagens_vistas.add(img_hash)
                             
-                            # Pega o texto/plain para detectar múltiplos eixos
+                            # Detecta número de eixos
                             titulo = None
                             num_axes = 1
                             if 'text/plain' in data:
                                 text_plain = data['text/plain']
                                 if isinstance(text_plain, list) and len(text_plain) > 0:
                                     titulo = text_plain[0]
-                                    # Detecta múltiplos eixos: "with X Axes"
                                     match = re.search(r'with (\d+) Axes?', titulo)
                                     if match:
                                         num_axes = int(match.group(1))
                             
-                            # Gera descrição baseada no código e contexto
-                            descricao = gerar_descricao_grafico(codigo_completo, titulo_markdown, num_axes)
-                            
-                            # Gera descrição detalhada com interpretação e implicações
-                            descricao_detalhada = gerar_descricao_detalhada(codigo_completo, titulo_markdown, num_axes, descricao)
-                            
-                            # Filtros para remover gráficos específicos
-                            deve_remover = False
-                            
-                            # 1. Remove gráfico com 3 eixos sobre distribuição do tamanho das copas
-                            # Descrição: "a distribuição do tamanho das copas das árvores"
-                            if num_axes == 3 and 'distribuição do tamanho das copas' in descricao.lower():
-                                deve_remover = True
-                            
-                            # 2. Remove gráfico com 1 eixo sobre "relação entre duas variáveis"
-                            # Descrição: "a relação entre duas variáveis das árvores"
-                            if num_axes == 1 and 'relação entre duas variáveis das árvores' in descricao.lower():
-                                deve_remover = True
-                            
-                            # 3. Remove dois gráficos sobre quantidade de árvores por RPA
-                            # Descrição: "a quantidade de árvores por RPA no Recife"
-                            if 'quantidade de árvores por rpa no recife' in descricao.lower():
-                                contador_rpa += 1
-                                if contador_rpa <= 2:  # Remove os 2 primeiros
-                                    deve_remover = True
-                            
-                            # 4. Remove gráfico sobre proporção de árvores por RPA
-                            # Descrição: "a proporção de árvores por RPA no Recife"
-                            if 'proporção de árvores por rpa no recife' in descricao.lower():
-                                deve_remover = True
-                            
-                            if deve_remover:
-                                continue  # Pula este gráfico
+                            # Gera ID único para o gráfico (baseado no índice sequencial)
+                            grafico_id = f"GRAFICO_{len(imagens) + 1:03d}"
                             
                             imagens.append({
                                 'imagem': img_data,
-                                'titulo': titulo or f'Gráfico {len(imagens) + 1}',
-                                'descricao': descricao,
-                                'descricao_detalhada': descricao_detalhada,
+                                'id': grafico_id,
+                                'codigo': codigo_completo,
                                 'num_axes': num_axes,
+                                'hash': img_hash,
                                 'cell_idx': cell_idx,
                                 'output_idx': output_idx
                             })
+        
+        # Identifica posições relativas para scatter plots específicos
+        scatter_altura_dap = []
+        scatter_altura_copa = []
+        
+        for i, img in enumerate(imagens):
+            codigo = img['codigo']
+            num_axes = img['num_axes']
+            
+            # Identifica scatter plots altura × DAP
+            if (num_axes == 1 and 
+                ('scatter' in codigo or 'scatterplot' in codigo) and
+                'altura' in codigo and 'dap' in codigo):
+                scatter_altura_dap.append(i)
+            
+            # Identifica scatter plots altura × Copa (sem DAP)
+            if (num_axes == 1 and 
+                ('scatter' in codigo or 'scatterplot' in codigo) and
+                'altura' in codigo and 'copa' in codigo and
+                'dap' not in codigo):
+                scatter_altura_copa.append(i)
+        
+        # Marca posições relativas
+        if len(scatter_altura_dap) > 0:
+            ultimo_idx = scatter_altura_dap[-1]
+            imagens[ultimo_idx]['posicao_relativa'] = 'ultimo'
+        
+        if len(scatter_altura_copa) >= 2:
+            penultimo_idx = scatter_altura_copa[-2]
+            imagens[penultimo_idx]['posicao_relativa'] = 'penultimo'
+            # Remove outros scatter plots altura × copa exceto o penúltimo
+            for i in reversed(scatter_altura_copa):
+                if i != penultimo_idx:
+                    imagens.pop(i)
+        elif len(scatter_altura_copa) == 1:
+            imagens[scatter_altura_copa[0]]['posicao_relativa'] = 'penultimo'
+        
+        # Filtros para remover gráficos específicos
+        imagens_filtradas = []
+        contador_rpa = 0
+        contador_correlacao = 0
+        
+        for img in imagens:
+            deve_remover = False
+            codigo = img['codigo']
+            num_axes = img['num_axes']
+            
+            # Remove gráfico com 3 eixos sobre distribuição do tamanho das copas
+            if num_axes == 3 and 'distribuição do tamanho das copas' in codigo:
+                deve_remover = True
+            
+            # Remove gráfico com 1 eixo sobre "relação entre duas variáveis"
+            if num_axes == 1 and 'relação entre duas variáveis das árvores' in codigo:
+                deve_remover = True
+            
+            # Remove dois gráficos sobre quantidade de árvores por RPA
+            if 'quantidade de árvores por rpa no recife' in codigo:
+                contador_rpa += 1
+                if contador_rpa <= 2:
+                    deve_remover = True
+            
+            # Remove gráfico sobre proporção de árvores por RPA
+            if 'proporção de árvores por rpa no recife' in codigo:
+                deve_remover = True
+            
+            # Remove uma das duplicatas do gráfico de correlação
+            if (num_axes == 2 and 'correlação' in codigo and 'altura' in codigo and 
+                'copa' in codigo and 'dap' in codigo):
+                contador_correlacao += 1
+                if contador_correlacao <= 1:
+                    deve_remover = True
+            
+            if not deve_remover:
+                imagens_filtradas.append(img)
+        
+        # Regenera IDs únicos sequenciais após a filtragem
+        for idx, img in enumerate(imagens_filtradas):
+            img['id'] = f"GRAFICO_{idx + 1:03d}"
+        
+        return imagens_filtradas
+        
     except Exception as e:
         print(f"⚠️ Erro ao ler notebook: {e}")
-    
-    return imagens
+        return []
 
 # ============================================
 # FUNÇÃO DE RENDERIZAÇÃO DO NOTEBOOK
 # ============================================
 
 if __name__ == '__main__':
+    import os
+    # Usa variável de ambiente PORT (fornecida pelo Render) ou porta padrão 8050
+    port = int(os.environ.get('PORT', 8050))
+    # Debug apenas em desenvolvimento local
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug, host='0.0.0.0', port=port)
     import os
     # Usa variável de ambiente PORT (fornecida pelo Render) ou porta padrão 8050
     port = int(os.environ.get('PORT', 8050))

@@ -1,88 +1,194 @@
-================================================================================ INSTRUCOES PARA EXECUTAR O PROJETO - CENSO ARBOREO DE RECIFE
-
-PREPARACAO DO AMBIENTE
+================================================================================
+INSTRUCOES PARA EXECUTAR O PROJETO - CENSO ARBOREO DE RECIFE
+Setup Completo do Projeto Verdefica
 ================================================================================
 
-1.1. Criar ambiente virtual (se ainda nao foi criado):
-python3 -m venv venv
+Este guia explica como configurar todos os aspectos técnicos do projeto, incluindo Python e React.
 
-(No Windows: python -m venv .venv)
-
-
-1.2. Ativar o ambiente virtual:
-source venv/bin/activate
-
-(No Windows: .\.venv\Scripts\activate)
-
-
-1.3. Instalar dependencias:
-pip install -r requirements.txt
-
-EXECUTAR DASHBOARD (DASH)
+================================================================================
+PRE-REQUISITOS
 ================================================================================
 
-2.1. Certifique-se de que o arquivo 'censo_arboreo_final.csv' e 'censo_arboreo_final_geral.csv' estão no diretorio
-(o dashboard usa este arquivo diretamente).
+1. Python (3.8 ou superior)
+   - Verificar: python3 --version ou python --version
+   - Instalar: https://www.python.org/downloads/
 
-2.2. Com o ambiente virtual ativado, execute:
-python app.py
+2. Node.js e npm (para a página React)
+   - Verificar: node --version e npm --version
+   - Instalar: https://nodejs.org/
+   - Versão recomendada: Node.js 16+ e npm 8+
 
-2.3. O dashboard abrira automaticamente no navegador em:
-http://localhost:8050
+================================================================================
+SETUP PYTHON (BACKEND DASH)
+================================================================================
 
-2.4. Funcionalidades do dashboard:
-- Dashboard de KPIs e métricas principais
-- Mapa Interativo (Folium) com filtros e camadas
-- Seletor de Espécies (Top 5)
-- Análise Estatística (em desenvolvimento)
-- Gráficos de distribuição por RPA
+1. Criar ambiente virtual (se ainda não foi criado):
+   python3 -m venv venv
+   
+   (No Windows: python -m venv venv)
 
+2. Ativar ambiente virtual:
+   
+   Linux/Mac:
+   source venv/bin/activate
+   
+   Windows:
+   venv\Scripts\activate
+
+3. Instalar dependências Python:
+   pip install -r requirements.txt
+   
+   Isso instalará:
+   - Dash e Dash Bootstrap Components
+   - Pandas, NumPy
+   - Plotly
+   - Folium, PyProj
+   - Scikit-learn
+   - Flask e outras dependências
+
+================================================================================
+SETUP REACT (FRONTEND - SELETOR DE ESPECIES)
+================================================================================
+
+1. Navegar para a pasta do React:
+   cd tela
+
+2. Instalar dependências Node.js:
+   npm install
+   
+   Isso instalará todas as dependências listadas em tela/package.json:
+   - React 18
+   - Vite
+   - Radix UI components
+   - Tailwind CSS
+   - TypeScript
+   - E outras dependências do frontend
+
+3. Fazer build do React:
+   npm run build
+   
+   Isso gerará os arquivos estáticos em ../tela_build/
+
+4. Voltar para a raiz do projeto:
+   cd ..
+
+================================================================================
+EXECUTAR O PROJETO
+================================================================================
+
+Opção 1: Usando o script
+   ./run_app.sh
+
+Opção 2: Manualmente
+   source venv/bin/activate  # Se ainda não estiver ativado
+   python app.py
+
+Acessar:
+   - Dashboard: http://localhost:8050
+   - Seletor de Espécies: http://localhost:8050/tela-react/
+
+================================================================================
 ARQUIVOS NECESSARIOS
 ================================================================================
 
-4.1. Arquivo de entrada obrigatorio:
-- 'censo_arboreo_final.csv' e 'censo_arboreo_final_geral.csv'(deve estar no diretorio do projeto)
+Arquivos de entrada obrigatórios:
+   - censo_arboreo_final.csv (deve estar no diretório do projeto)
+   - censo_arboreo_final_geral.csv (deve estar no diretório do projeto)
 
-4.2. Arquivos do projeto (principais):
-- app.py (código principal do Dash)
-- requirements.txt (dependencias)
+Arquivos do projeto (principais):
+   - app.py (código principal do Dash)
+   - requirements.txt (dependências Python)
+   - tela/package.json (dependências React/Node.js)
+   - notebook/Verdefica_Unificado_12nov2025.ipynb (notebook com análises)
 
-DEPENDENCIAS PRINCIPAIS
+================================================================================
+ESTRUTURA DE DEPENDENCIAS
 ================================================================================
 
-dash>=2.14.0
+Python (requirements.txt):
+   - Gerencia todas as dependências do backend Dash
+   - Inclui: Dash, Flask, Pandas, Plotly, Folium, Scikit-learn, etc.
+   - Instalar: pip install -r requirements.txt
 
-dash-bootstrap-components>=1.5.0
+Node.js (tela/package.json):
+   - Gerencia todas as dependências do frontend React
+   - Inclui: React, Vite, Radix UI, Tailwind CSS, TypeScript, etc.
+   - Instalar: cd tela && npm install
 
-pandas>=1.5.0
+================================================================================
+FUNCIONALIDADES DO DASHBOARD
+================================================================================
 
-numpy>=1.21.0
+- Dashboard de KPIs e métricas principais
+- Análise Estatística (com gráficos do notebook)
+- Mapa Interativo (Folium) com filtros e camadas
+- Seletor de Espécies (Tela React integrada)
+- Gráficos de distribuição por RPA
 
-plotly>=5.17.0
+================================================================================
+ATUALIZAR DEPENDENCIAS
+================================================================================
 
-pyproj>=3.7.0
+Python:
+   source venv/bin/activate
+   pip install -r requirements.txt --upgrade
 
-folium>=0.14.0
+React:
+   cd tela
+   npm update
+   npm run build
+   cd ..
 
-gunicorn>=21.2.0
+================================================================================
+NOTAS IMPORTANTES
+================================================================================
 
-flask-caching>=2.1.0
+1. O requirements.txt NÃO inclui dependências do React
+   - As dependências do React estão em tela/package.json
+   - São gerenciadas via npm, não pip
 
+2. Build do React é necessário
+   - O app Dash serve os arquivos estáticos de tela_build/
+   - Sem o build, a aba "Seletor de Espécies" não funcionará
+
+3. Ordem de instalação
+   - Primeiro: Python e requirements.txt
+   - Depois: Node.js e npm install na pasta tela/
+   - Por fim: npm run build para gerar os arquivos estáticos
+
+================================================================================
 SOLUCAO DE PROBLEMAS
 ================================================================================
 
-6.1. Se o dashboard nao abrir:
-- Verifique se o ambiente virtual esta ativado
-- Verifique se todas as dependencias estao instaladas (pip install -r requirements.txt)
-- Verifique se a porta 8050 está livre. Se não, altere no final do app.py:
-app.run(debug=True, port=8051)
+Erro: "Build do React não encontrado"
+   cd tela
+   npm install
+   npm run build
+   cd ..
 
-6.2. Se o mapa não carregar:
-- Verifique sua conexão com a internet (os tiles do mapa precisam dela)
+Erro: "Module not found" (Python)
+   source venv/bin/activate
+   pip install -r requirements.txt
 
-6.3. Se der erro de "Arquivo não encontrado":
-- Certifique-se de que está rodando o comando python app.py DE DENTRO da pasta do projeto.
+Erro: "npm: command not found"
+   - Instale Node.js: https://nodejs.org/
 
+Erro: "Port 8050 already in use"
+   - Altere a porta no final do app.py:
+     app.run(debug=True, port=8051)
+
+Se o dashboard não abrir:
+   - Verifique se o ambiente virtual está ativado
+   - Verifique se todas as dependências estão instaladas
+   - Verifique se a porta 8050 está livre
+
+Se o mapa não carregar:
+   - Verifique sua conexão com a internet (os tiles do mapa precisam dela)
+
+Se der erro de "Arquivo não encontrado":
+   - Certifique-se de que está rodando o comando python app.py DE DENTRO da pasta do projeto
+
+================================================================================
 ESTRUTURA DE DIRETORIOS
 ================================================================================
 
@@ -92,31 +198,44 @@ Projetos 5 - SR2/
 ├── INSTRUCOES.txt (este arquivo)
 ├── censo_arboreo_final.csv (arquivo de entrada)
 ├── censo_arboreo_final_geral.csv (arquivo de entrada)
-├── especies/
-└── venv/ (ambiente virtual)
-└── .gitignore
+├── especies/ (imagens das espécies)
+├── notebook/ (notebook com análises)
+│   └── Verdefica_Unificado_12nov2025.ipynb
+├── tela/ (código fonte React)
+│   ├── package.json (dependências React)
+│   └── src/ (código React)
+├── tela_build/ (arquivos compilados do React - gerado após build)
+├── venv/ (ambiente virtual Python)
+└── run_app.sh (script para executar o app)
 
+================================================================================
 COMANDOS RAPIDOS
 ================================================================================
 
-Criar ambiente virtual
+Criar ambiente virtual:
+   python3 -m venv venv
 
-python3 -m venv venv
+Ativar ambiente virtual:
+   source venv/bin/activate
 
-Ativar ambiente virtual
+Instalar dependências Python:
+   pip install -r requirements.txt
 
-source venv/bin/activate
+Instalar dependências React:
+   cd tela && npm install && cd ..
 
-Instalar dependencias
+Fazer build do React:
+   cd tela && npm run build && cd ..
 
-pip install -r requirements.txt
+Executar dashboard:
+   python app.py
 
-Executar dashboard
+Ou usando o script:
+   ./run_app.sh
 
-python app.py
+Desativar ambiente virtual (quando terminar):
+   deactivate
 
-Desativar ambiente virtual (quando terminar)
-
-deactivate
-
-================================================================================ FIM DAS INSTRUCOES
+================================================================================
+FIM DAS INSTRUCOES
+================================================================================

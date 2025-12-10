@@ -2,6 +2,14 @@
 # VERDEFICA - DASH VERSION
 # Requirements completos para todos os aspectos técnicos do projeto
 # ============================================
+#
+# NOTA: Este arquivo contém apenas dependências Python.
+# Para a página React (Seletor de Espécies), são necessárias:
+# - Node.js (v16 ou superior) e npm
+# - Dependências estão em: tela/package.json
+# - Para instalar: cd tela && npm install
+# - Para fazer build: cd tela && npm run build
+# ============================================
 
 # ============================================
 # Core Dash e Framework Web

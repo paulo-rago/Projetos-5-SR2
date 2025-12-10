@@ -88,19 +88,20 @@ app.index_string = '''
 
 # ============================================
 # CARREGAR DADOS E CALCULAR MÉTRICAS
-# 🌟 OTIMIZAÇÃO 1: CARREGAR APENAS COLUNAS ESSENCIAIS 🌟
+# 🌟 OTIMIZAÇÃO: Carregamento otimizado e separação do objeto Geográfico (df_mapa_geo)
 # ============================================
 
 df_geral_file = Path("censo_arboreo_final_geral.csv")
 metricas = None
 df_geral = None
+df_mapa_geo = None # Objeto leve para dados geográficos
 
 COLUNAS_ESSENCIAIS = [
     'x', 'y', 'nome_popular', 'especie', 'fitossanid_grupo', 
     'estado_fitossanitario', 'condicao_fisica', 'saude', 
     'altura', 'altura_total', 'data_plantio', 'rpa', 
-    'copa', 'cap', # para o classificador
-    'bairro' # se for usado em alguma análise futura
+    'copa', 'cap', 
+    'bairro' 
 ]
 
 if df_geral_file.exists():
@@ -115,7 +116,7 @@ if df_geral_file.exists():
         
     except Exception as e:
         print(f"❌ Erro ao ler CSV com colunas essenciais: {e}")
-        df_geral = None # Se falhar, define como None
+        df_geral = None 
         
     if df_geral is not None and len(df_geral) > 0:
         # --- 1. PRÉ-PROCESSAMENTO DE COORDENADAS ---
@@ -128,7 +129,6 @@ if df_geral_file.exists():
                     # Tenta CRS 32725 (Recife/Zona 25S)
                     transformer = Transformer.from_crs("EPSG:32725", "EPSG:4326", always_xy=True)
                 
-                # Aplica transformação e lida com NaNs/Infinitos
                 x_validos = df_geral['x'].fillna(0).values
                 y_validos = df_geral['y'].fillna(0).values
 
@@ -138,6 +138,14 @@ if df_geral_file.exists():
                 df_geral['longitude'] = lon
         except Exception as e:
             print(f"⚠️ Erro coordenadas: {e}")
+
+        # 🌟 CRIAÇÃO DO OBJETO LEVE PARA O MAPA 🌟
+        # Isso será usado no callback do mapa para evitar copiar o df_geral (que é grande)
+        COLUNAS_MAPA = ['latitude', 'longitude', 'rpa']
+        df_mapa_geo = df_geral[
+            [c for c in COLUNAS_MAPA if c in df_geral.columns]
+        ].dropna(subset=['latitude', 'longitude']).copy()
+
 
         # --- 2. CÁLCULO DINÂMICO ---
         print("🔄 Calculando métricas...")
@@ -272,6 +280,7 @@ if df_geral_file.exists():
         print(f"✅ Dados carregados!")
     else:
         df_geral = None
+        df_mapa_geo = None
         print("⚠️ Dataset não encontrado ou vazio!")
 
 # ============================================
@@ -357,7 +366,7 @@ def render_footer():
             
             html.Hr(style={'borderColor': '#374151', 'opacity': 1}),
             
-            html.Div("© 2024 Verdefica - Prefeitura do Recife. Todos os direitos reservados.", 
+            html.Div("© 2025 Verdefica - Prefeitura do Recife. Todos os direitos reservados.", 
                      style={'color': '#6B7280', 'textAlign': 'center', 'padding': '1.5rem 0', 'fontSize': '0.85rem'})
             
         ], fluid=True, style={'maxWidth': '1400px'})
@@ -794,44 +803,47 @@ def render_mapa():
 def atualizar_mapa_folium(n_clicks, tipo_mapa, rpas_selecionadas):
     """
     Atualiza o mapa Folium. 
-    🌟 OTIMIZAÇÃO 3: Implementa limite estrito de 1.000 pontos para qualquer visualização de mapa.
+    🌟 OTIMIZAÇÃO: Usa o objeto df_mapa_geo (leve) e implementa limite estrito de 100 pontos.
     """
     if not n_clicks: return "", dbc.Alert("👆 Clique no botão 'Gerar Mapa' para visualizar", color="info"), "Mapa de Calor", "Todas RPAs"
-    if df_geral is None or len(df_geral) == 0: return "", dbc.Alert("❌ Dataset não encontrado ou vazio!", color="danger"), "Erro", "Erro"
+    
+    # Usa o objeto geográfico leve para evitar acessar o df_geral completo
+    if df_mapa_geo is None or len(df_mapa_geo) == 0: 
+        return "", dbc.Alert("❌ Dados geográficos não encontrados ou não carregados!", color="danger"), "Erro", "Erro"
     
     # 🌟 LIMITE MÁXIMO DE PONTOS PARA QUALQUER VISUALIZAÇÃO NO MAPA DETALHADO
-    MAX_POINTS = 1000 
+    MAX_POINTS = 100 
     
     try:
-        df_mapa = df_geral.copy()
+        # 1. Copia o objeto leve (mais rápido que copiar o df_geral)
+        df_mapa_filtrado = df_mapa_geo.copy()
         
-        # 1. Aplicar filtro de RPA
-        if rpas_selecionadas and 'rpa' in df_mapa.columns:
+        # 2. Aplicar filtro de RPA
+        if rpas_selecionadas and 'rpa' in df_mapa_filtrado.columns:
             rpas_int = [int(r) for r in rpas_selecionadas]
-            df_mapa = df_mapa[df_mapa['rpa'].isin(rpas_int)].copy()
+            df_mapa_filtrado = df_mapa_filtrado[df_mapa_filtrado['rpa'].isin(rpas_int)].copy()
             
-        # 2. Aplicar filtro de coordenadas (limite da cidade)
-        df_mapa = df_mapa[
-            (df_mapa['latitude'].between(-8.2, -7.9)) & 
-            (df_mapa['longitude'].between(-35.1, -34.8))
+        # 3. Aplicar filtro de coordenadas (limite da cidade)
+        df_mapa_filtrado = df_mapa_filtrado[
+            (df_mapa_filtrado['latitude'].between(-8.2, -7.9)) & 
+            (df_mapa_filtrado['longitude'].between(-35.1, -34.8))
         ].copy()
         
-        total_pontos = len(df_mapa)
+        total_pontos = len(df_mapa_filtrado)
         if total_pontos == 0: 
             return "", dbc.Alert("❌ Nenhum ponto encontrado com os filtros aplicados!", color="warning"), tipo_mapa, f"{len(rpas_selecionadas)} RPAs"
         
-        # 3. Aplicar amostragem estrita de 1000 pontos
-        df_amostra = df_mapa
+        # 4. Aplicar amostragem estrita de 100 pontos
+        df_amostra = df_mapa_filtrado
         amostra_info = ""
         info_color = "success"
         
         if total_pontos > MAX_POINTS:
-            # Reduz para 1000 pontos para evitar estouro de memória/tempo limite
-            df_amostra = df_mapa.sample(n=MAX_POINTS, random_state=42)
+            df_amostra = df_mapa_filtrado.sample(n=MAX_POINTS, random_state=42)
             amostra_info = html.Span(f" (Exibindo amostra de {MAX_POINTS:,} pontos)")
             info_color = "danger" 
         
-        # Gerar o mapa usando a amostra
+        # Gerar o mapa usando a amostra (MAX 100 PONTOS)
         mapa = folium.Map(location=[-8.05, -34.93], zoom_start=11, tiles='OpenStreetMap', control_scale=True)
         badge_tipo = "Mapa de Calor" if tipo_mapa == 'heatmap' else "Marcadores"
         badge_rpas = "Todas RPAs" if len(rpas_selecionadas) == 6 else f"{len(rpas_selecionadas)} RPA(s)"
@@ -846,7 +858,7 @@ def atualizar_mapa_folium(n_clicks, tipo_mapa, rpas_selecionadas):
             marker_cluster = MarkerCluster(name="Árvores", overlay=True, control=True, show=True).add_to(mapa)
             
             for idx, row in df_amostra.iterrows():
-                # Loop por 1000 pontos é aceitável para o browser
+                # Loop por 100 pontos deve ser extremamente rápido
                 folium.CircleMarker(location=[row['latitude'], row['longitude']], radius=4, color='green', fill=True, fillColor='green', fillOpacity=0.7, weight=1).add_to(marker_cluster)
                 
             info = dbc.Alert([html.Strong(f"✅ {total_pontos:,} árvores "), amostra_info], color=info_color)

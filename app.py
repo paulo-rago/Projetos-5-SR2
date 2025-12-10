@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_003
+        if grafico_id == 'GRAFICO_003':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O gráfico apresenta a relação entre o CAP (circunferência do tronco) e o diâmetro da copa das árvores da arborização urbana do Recife. A presença da linha de regressão indica uma tendência positiva: à medida que o CAP aumenta, o diâmetro da copa também tende a crescer, evidenciando um padrão geral de desenvolvimento estrutural das árvores.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'A linha de regressão reforça a existência de uma correlação positiva entre o tamanho do tronco e o tamanho da copa, embora os pontos estejam bastante dispersos. Isso mostra que, apesar da tendência geral, árvores com o mesmo CAP podem apresentar copas de tamanhos diferentes. Essa heterogeneidade pode estar relacionada a fatores como espécie, podas frequentes, limitações de espaço urbano, compactação do solo e condições ambientais típicas do Recife, como clima quente e alta umidade.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'Os resultados têm alta relevância para o planejamento da arborização urbana. Árvores com copas mais desenvolvidas contribuem para o sombreamento das vias, redução da temperatura e melhoria do conforto térmico. Entretanto, o gráfico também indica que o crescimento da copa nem sempre acompanha de forma proporcional o aumento do tronco, o que reforça a necessidade de manejo adequado para evitar conflitos com fiação elétrica, fachadas e calçadas. A linha de tendência auxilia na previsão do comportamento médio das árvores ao longo do tempo.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'A análise demonstra que o CAP é um bom indicador do potencial de expansão da copa, mas não deve ser utilizado de forma isolada. A variabilidade observada reforça a importância de avaliações individuais e de políticas de manejo contínuo na arborização do Recife. O uso da regressão linear contribui para projeções mais realistas do crescimento das árvores e para decisões mais seguras sobre plantio, poda e escolha de espécies no ambiente urbano.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_002
         if grafico_id == 'GRAFICO_002':
             # Análise estruturada por seções

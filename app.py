@@ -966,6 +966,16 @@ def _render_notebook_graficos():
         descricao_detalhada = img_info.get('descricao_detalhada', [])
         num_axes = img_info.get('num_axes', 1)
         
+        # Verifica se é o gráfico de matriz de confusão com 4 eixos
+        # Identifica pelo texto personalizado na descrição detalhada
+        eh_grafico_confusao = False
+        if num_axes == 4 and descricao_detalhada:
+            # Verifica se a primeira seção contém o texto personalizado sobre matriz de confusão
+            primeira_secao = descricao_detalhada[0] if len(descricao_detalhada) > 0 else {}
+            texto_primeira = primeira_secao.get('texto', '')
+            if 'avaliação de um modelo de classificação usado para distinguir árvores com copa normal e copa grande' in texto_primeira.lower():
+                eh_grafico_confusao = True
+        
         # Verifica se é o gráfico de correlação entre Altura, Copa e DAP com 2 eixos
         # Identifica pelo texto personalizado na descrição detalhada
         eh_grafico_correlacao = False
@@ -976,8 +986,10 @@ def _render_notebook_graficos():
             if 'matriz de correlação entre três medidas dendrométricas' in texto_primeira.lower():
                 eh_grafico_correlacao = True
         
-        # Define o título personalizado para o gráfico de correlação
-        if eh_grafico_correlacao:
+        # Define o título personalizado
+        if eh_grafico_confusao:
+            titulo_limpo = "Avaliação da Matriz de Confusão"
+        elif eh_grafico_correlacao:
             titulo_limpo = "Correlação entre medidas dendrométricas"
         else:
             # Limpa o título removendo tags HTML e caracteres especiais
@@ -1264,6 +1276,14 @@ def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basic
     
     descricao_detalhada = []
     
+    # Verifica se é o gráfico de matriz de confusão com 4 eixos (1800x500)
+    eh_grafico_confusao = (
+        num_axes == 4 and 
+        ('confusion' in codigo or 'confusão' in codigo or 'confusao' in codigo or 
+         'roc' in codigo or 'precision' in codigo or 'recall' in codigo or
+         (titulo_markdown and ('confusão' in titulo_markdown.lower() or 'confusion' in titulo_markdown.lower())))
+    )
+    
     # Verifica se é o gráfico de correlação entre Altura, Copa e DAP com 2 eixos (600x500)
     eh_grafico_correlacao = (
         num_axes == 2 and 
@@ -1272,6 +1292,30 @@ def gerar_descricao_detalhada(codigo, titulo_markdown, num_axes, descricao_basic
         ('copa' in codigo or (titulo_markdown and 'copa' in titulo_markdown.lower())) and
         ('dap' in codigo or (titulo_markdown and 'dap' in titulo_markdown.lower()))
     )
+    
+    if eh_grafico_confusao:
+        # Texto personalizado para o gráfico de matriz de confusão
+        descricao_detalhada.append({
+            'titulo': 'O que o gráfico evidencia',
+            'texto': 'O conjunto de gráficos apresenta a avaliação de um modelo de classificação usado para distinguir árvores com copa normal e copa grande no Recife. A matriz de confusão quantifica os acertos e erros, enquanto as curvas ROC e Precision-Recall mostram o desempenho geral em diferentes limiares de decisão.'
+        })
+        
+        descricao_detalhada.append({
+            'titulo': 'Interpretação e análise',
+            'texto': 'Matriz de confusão\n\nNa base de teste:\n\n181 árvores com copa normal foram classificadas corretamente.\n\n46 árvores com copa grande foram identificadas corretamente.\n\n11 falsos positivos ocorreram (árvores normais classificadas como grandes).\n\n29 falsos negativos ocorreram (árvores grandes classificadas como normais).\n\nO número relativamente alto de falsos negativos sugere que o modelo é conservador: tende a rotular uma árvore como "grande" apenas quando há alta confiança, privilegiando a precisão sobre o recall.\n\nDesempenho geral (ROC e Precision-Recall)\n\nA curva ROC apresenta AUC = 0.93, indicando excelente capacidade discriminativa.\n\nA curva Precision-Recall mostra AP = 0.84, reafirmando bom desempenho mesmo com possível desbalanceamento entre classes.\n\nEsses resultados indicam que o modelo mantém bom equilíbrio entre erro e acerto, e que o limiar de decisão pode ser ajustado sem perda drástica de desempenho.'
+        })
+        
+        descricao_detalhada.append({
+            'titulo': 'Impactos e relevância',
+            'texto': 'A classificação do porte da copa tem aplicações diretas na gestão urbana:\n\nPriorização de podas e vistorias, especialmente para árvores grandes que podem representar risco em áreas adensadas.\n\nRacionalização de equipes e recursos, direcionando intervenções para locais de maior probabilidade de ocorrência de copas grandes.\n\nApoio ao planejamento urbano, ao identificar padrões de desenvolvimento arbóreo em diferentes bairros.\n\nAlém disso, o bom desempenho do modelo reforça a utilidade de métricas dendrométricas—especialmente CAP e DAP como indicadores estruturais.'
+        })
+        
+        descricao_detalhada.append({
+            'titulo': 'Implicações práticas e conclusões',
+            'texto': 'Os resultados sugerem que:\n\nO CAP continua sendo um forte preditor do porte da copa e se mostra adequado como variável explicativa.\n\nO modelo é tecnicamente robusto, mas seu limiar pode — e deve — ser ajustado conforme o objetivo operacional:\n\nMaior recall caso a prioridade seja não deixar árvores grandes passarem despercebidas, aumentando segurança em vias públicas.\n\nMaior precisão caso se deseje evitar inspeções desnecessárias e otimizar custos.\n\nRecomendação\n\nPara aplicações voltadas à segurança e prevenção de riscos, recomenda-se ajustar o limiar para aumentar o recall, mesmo que isso gere leve aumento nos falsos positivos.\nIsso reduz a chance de árvores grandes deixarem de ser inspecionadas, o que é crucial em áreas urbanas vulneráveis a quedas, ventos fortes e estresse ambiental.'
+        })
+        
+        return descricao_detalhada
     
     if eh_grafico_correlacao:
         # Texto personalizado para o gráfico de correlação

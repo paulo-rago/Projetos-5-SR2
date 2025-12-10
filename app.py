@@ -1503,7 +1503,7 @@ def _render_notebook_graficos():
                 )
         
         # Adiciona análise específica para GRAFICO_018
-        if grafico_id == 'GRAFICO_018':
+        if grafico_id == 'GRAFICO_019':
             # Análise estruturada por seções
             secoes_analise = [
                 {
@@ -1552,7 +1552,7 @@ def _render_notebook_graficos():
                 )
         
         # Adiciona análise específica para GRAFICO_019
-        if grafico_id == 'GRAFICO_019':
+        if grafico_id == 'GRAFICO_020':
             # Análise estruturada por seções
             secoes_analise = [
                 {
@@ -1601,7 +1601,7 @@ def _render_notebook_graficos():
                 )
         
         # Adiciona análise específica para GRAFICO_020
-        if grafico_id == 'GRAFICO_020':
+        if grafico_id == 'GRAFICO_021':
             # Análise estruturada por seções
             secoes_analise = [
                 {
@@ -1864,9 +1864,18 @@ def extrair_imagens_notebook():
             if not deve_remover:
                 imagens_filtradas.append(img)
         
-        # Regenera IDs únicos sequenciais após a filtragem
-        for idx, img in enumerate(imagens_filtradas):
-            img['id'] = f"GRAFICO_{idx + 1:03d}"
+        # Remove gráficos específicos por ID (mantém IDs estáticos - não renumerar)
+        ids_para_remover = ['GRAFICO_004', 'GRAFICO_009', 'GRAFICO_010', 'GRAFICO_011', 
+                           'GRAFICO_013', 'GRAFICO_016', 'GRAFICO_017', 'GRAFICO_018']
+        imagens_filtradas = [img for img in imagens_filtradas if img['id'] not in ids_para_remover]
+        
+        # Ordena os gráficos por ID para manter a ordem correta (GRAFICO_001, GRAFICO_002, etc.)
+        # Isso garante que os textos apareçam na ordem esperada, mesmo que alguns gráficos tenham sido removidos
+        imagens_filtradas.sort(key=lambda x: x['id'])
+        
+        # IDs são estáticos - NÃO renumerar após filtragem
+        # Os IDs originais (atribuídos na primeira passada) são mantidos
+        # para preservar a associação correta com os textos de análise
         
         return imagens_filtradas
         

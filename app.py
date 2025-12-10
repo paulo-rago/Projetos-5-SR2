@@ -794,22 +794,19 @@ def render_mapa():
 def atualizar_mapa_folium(n_clicks, tipo_mapa, rpas_selecionadas):
     """
     Atualiza o mapa Folium. 
-    🌟 OTIMIZAÇÃO 2: Aplica amostragem condicional (heatmap vs marker) para limitar o processamento, 
-    focando em reduzir drasticamente a carga do MarkerCluster.
+    🌟 OTIMIZAÇÃO 3: Implementa limite estrito de 1.000 pontos para qualquer visualização de mapa.
     """
     if not n_clicks: return "", dbc.Alert("👆 Clique no botão 'Gerar Mapa' para visualizar", color="info"), "Mapa de Calor", "Todas RPAs"
     if df_geral is None or len(df_geral) == 0: return "", dbc.Alert("❌ Dataset não encontrado ou vazio!", color="danger"), "Erro", "Erro"
     
-    # 🌟 Configuração dos limites de amostragem
-    MAX_POINTS_HEATMAP = 20000  # Limite maior para Mapa de Calor
-    MAX_POINTS_MARKER = 5000     # Limite menor para MarkerCluster (reduz a carga JS/memória)
+    # 🌟 LIMITE MÁXIMO DE PONTOS PARA QUALQUER VISUALIZAÇÃO NO MAPA DETALHADO
+    MAX_POINTS = 1000 
     
     try:
         df_mapa = df_geral.copy()
         
         # 1. Aplicar filtro de RPA
         if rpas_selecionadas and 'rpa' in df_mapa.columns:
-            # Converte valores selecionados para números inteiros para o filtro
             rpas_int = [int(r) for r in rpas_selecionadas]
             df_mapa = df_mapa[df_mapa['rpa'].isin(rpas_int)].copy()
             
@@ -823,21 +820,18 @@ def atualizar_mapa_folium(n_clicks, tipo_mapa, rpas_selecionadas):
         if total_pontos == 0: 
             return "", dbc.Alert("❌ Nenhum ponto encontrado com os filtros aplicados!", color="warning"), tipo_mapa, f"{len(rpas_selecionadas)} RPAs"
         
-        # 3. Aplicar amostragem condicional
-        if tipo_mapa == 'heatmap':
-            MAX_LIMIT = MAX_POINTS_HEATMAP
-        else:
-            MAX_LIMIT = MAX_POINTS_MARKER
-            
+        # 3. Aplicar amostragem estrita de 1000 pontos
         df_amostra = df_mapa
         amostra_info = ""
         info_color = "success"
         
-        if total_pontos > MAX_LIMIT:
-            df_amostra = df_mapa.sample(n=MAX_LIMIT, random_state=42)
-            amostra_info = html.Span(f" (Exibindo amostra de {MAX_LIMIT:,} pontos)")
-            info_color = "warning"
-
+        if total_pontos > MAX_POINTS:
+            # Reduz para 1000 pontos para evitar estouro de memória/tempo limite
+            df_amostra = df_mapa.sample(n=MAX_POINTS, random_state=42)
+            amostra_info = html.Span(f" (Exibindo amostra de {MAX_POINTS:,} pontos)")
+            info_color = "danger" 
+        
+        # Gerar o mapa usando a amostra
         mapa = folium.Map(location=[-8.05, -34.93], zoom_start=11, tiles='OpenStreetMap', control_scale=True)
         badge_tipo = "Mapa de Calor" if tipo_mapa == 'heatmap' else "Marcadores"
         badge_rpas = "Todas RPAs" if len(rpas_selecionadas) == 6 else f"{len(rpas_selecionadas)} RPA(s)"
@@ -852,14 +846,13 @@ def atualizar_mapa_folium(n_clicks, tipo_mapa, rpas_selecionadas):
             marker_cluster = MarkerCluster(name="Árvores", overlay=True, control=True, show=True).add_to(mapa)
             
             for idx, row in df_amostra.iterrows():
-                # Nota: A pop-up seria útil, mas aumenta o peso. Mantido simples para performance.
+                # Loop por 1000 pontos é aceitável para o browser
                 folium.CircleMarker(location=[row['latitude'], row['longitude']], radius=4, color='green', fill=True, fillColor='green', fillOpacity=0.7, weight=1).add_to(marker_cluster)
                 
             info = dbc.Alert([html.Strong(f"✅ {total_pontos:,} árvores "), amostra_info], color=info_color)
             
         return mapa._repr_html_(), info, badge_tipo, badge_rpas
     except Exception as e: 
-        # Garante que o erro do Python não quebre a interface
         return "", dbc.Alert(f"❌ Erro ao gerar mapa: {str(e)}", color="danger"), "Erro", "Erro"
 
 @app.callback(Output('filtro-rpa', 'value'), Input('btn-limpar-filtros', 'n_clicks'))

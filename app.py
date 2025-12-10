@@ -999,19 +999,217 @@ def _render_notebook_graficos():
         )
         
         # Imagem
-        card_content.append(
-            dbc.CardBody([
-                html.Img(
-                    src=f"data:image/png;base64,{img_base64}",
-                    style={
-                        'width': '100%',
-                        'height': 'auto',
-                        'objectFit': 'contain',
-                        'borderRadius': '8px',
-                        'maxHeight': max_height
-                    }
+        card_body_content = [
+            html.Img(
+                src=f"data:image/png;base64,{img_base64}",
+                style={
+                    'width': '100%',
+                    'height': 'auto',
+                    'objectFit': 'contain',
+                    'borderRadius': '8px',
+                    'maxHeight': max_height
+                }
+            )
+        ]
+        
+        # Adiciona análise específica para GRAFICO_007
+        if grafico_id == 'GRAFICO_007':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O conjunto de gráficos apresenta a avaliação de um modelo de classificação usado para distinguir árvores com copa normal e copa grande no Recife. A matriz de confusão quantifica os acertos e erros, enquanto as curvas ROC e Precision-Recall mostram o desempenho geral em diferentes limiares de decisão.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'Matriz de confusão\n\nNa base de teste:\n\n181 árvores com copa normal foram classificadas corretamente.\n\n46 árvores com copa grande foram identificadas corretamente.\n\n11 falsos positivos ocorreram (árvores normais classificadas como grandes).\n\n29 falsos negativos ocorreram (árvores grandes classificadas como normais).\n\nO número relativamente alto de falsos negativos sugere que o modelo é conservador: tende a rotular uma árvore como "grande" apenas quando há alta confiança, privilegiando a precisão sobre o recall.\n\nDesempenho geral (ROC e Precision-Recall)\n\nA curva ROC apresenta AUC = 0.93, indicando excelente capacidade discriminativa.\n\nA curva Precision-Recall mostra AP = 0.84, reafirmando bom desempenho mesmo com possível desbalanceamento entre classes.\n\nEsses resultados indicam que o modelo mantém bom equilíbrio entre erro e acerto, e que o limiar de decisão pode ser ajustado sem perda drástica de desempenho.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'A classificação do porte da copa tem aplicações diretas na gestão urbana:\n\nPriorização de podas e vistorias, especialmente para árvores grandes que podem representar risco em áreas adensadas.\n\nRacionalização de equipes e recursos, direcionando intervenções para locais de maior probabilidade de ocorrência de copas grandes.\n\nApoio ao planejamento urbano, ao identificar padrões de desenvolvimento arbóreo em diferentes bairros.\n\nAlém disso, o bom desempenho do modelo reforça a utilidade de métricas dendrométricas—especialmente CAP e DAP como indicadores estruturais.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'Os resultados sugerem que:\n\nO CAP continua sendo um forte preditor do porte da copa e se mostra adequado como variável explicativa.\n\nO modelo é tecnicamente robusto, mas seu limiar pode — e deve — ser ajustado conforme o objetivo operacional:\n\nMaior recall caso a prioridade seja não deixar árvores grandes passarem despercebidas, aumentando segurança em vias públicas.\n\nMaior precisão caso se deseje evitar inspeções desnecessárias e otimizar custos.\n\nRecomendação\n\nPara aplicações voltadas à segurança e prevenção de riscos, recomenda-se ajustar o limiar para aumentar o recall, mesmo que isso gere leve aumento nos falsos positivos.\nIsso reduz a chance de árvores grandes deixarem de ser inspecionadas, o que é crucial em áreas urbanas vulneráveis a quedas, ventos fortes e estresse ambiental.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
                 )
-            ], style={'padding': '1.5rem', 'textAlign': 'center'})
+        
+        # Adiciona análise específica para GRAFICO_018
+        if grafico_id == 'GRAFICO_018':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O gráfico apresenta a matriz de correlação entre três medidas dendrométricas — Altura, Copa e DAP — referentes às árvores de um bairro do Recife. Ele mostra o quanto cada par de variáveis está linearmente associado.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'A correlação evidencia que:\n\nAltura × DAP → r = 0.75\nHá uma correlação forte, indicando que árvores mais altas tendem a apresentar troncos de maior diâmetro. Isso é esperado em árvores urbanas onde o crescimento vertical costuma acompanhar o espessamento do tronco.\n\nAltura × Copa → r = 0.48\nA relação é moderada, sugerindo que a expansão da copa não depende apenas da altura da árvore, mas também de fatores como espécie, idade, podas e limitações do ambiente urbano.\n\nCopa × DAP → r = 0.48\nTambém apresenta correlação moderada, indicando que o desenvolvimento da copa não cresce necessariamente na mesma proporção do diâmetro do tronco — novamente refletindo influência de manejo e restrições do espaço urbano.\n\nEssas correlações estão alinhadas ao comportamento esperado em áreas urbanas, onde podas e infraestrutura condicionam o crescimento natural das árvores.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'Compreender essas relações é fundamental para:\n\nplanejar podas de maneira adequada, evitando cortes excessivos em árvores que já possuem copa reduzida;\n\nprever riscos estruturais, já que troncos mais espessos (DAP maior) estão associados ao maior porte geral das árvores;\n\norientar ações de manejo e plantio, como escolha de espécies compatíveis com o espaço disponível.\n\nA correlação forte entre altura e DAP reforça que essas variáveis podem ser usadas para modelagem preditiva e estimativa de biomassa ou estabilidade da árvore.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'A análise de correlação mostra que:\n\nO DAP é uma métrica confiável para prever outras características estruturais.\n\nA copa, por ter correlação moderada, depende fortemente do manejo urbano (podas, conflitos com infraestrutura, espaço para crescimento).\n\nEssas relações ajudam a identificar onde o manejo precisa ser aprimorado e quais áreas podem ser priorizadas no planejamento de arborização.\n\nConclusão: compreender a correlação entre medidas dendrométricas permite um manejo mais eficiente, segura melhor alocação de recursos e contribui para um planejamento urbano ambientalmente mais sustentável e estrategicamente orientado.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
+        # Adiciona análise específica para GRAFICO_019
+        if grafico_id == 'GRAFICO_019':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O gráfico mostra a relação entre a altura das árvores e a amplitude da copa em um bairro do Recife.\nA linha tracejada representa a tendência média dessa relação.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'A correlação observada (r = 0.48) é moderada, indicando que:\n\nÁrvores mais altas tendem a desenvolver copas maiores, mas essa relação não é tão forte ou direta quanto a relação entre altura e DAP.\n\nA dispersão dos pontos é ampla, principalmente em árvores de médio porte, mostrando que fatores externos influenciam muito o tamanho da copa.\n\nEssa variabilidade é esperada no ambiente urbano, onde o espaço disponível, as podas, a espécie e a competição por luz influenciam fortemente o desenvolvimento lateral da copa.\n\nO ponto muito acima do padrão (copa ≈ 100 m²) sugere a presença de uma espécie excepcionalmente ampla ou um caso pontual de árvore muito desenvolvida.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'A relação entre altura e copa tem impacto direto na gestão urbana:\n\nPlanejamento de podas e controle de interferências: copas maiores têm maior probabilidade de entrar em conflito com fiação, fachadas e vias.\n\nOferta de benefícios ambientais: árvores com copas amplas oferecem mais sombra, redução de temperatura e conforto térmico.\n\nPrevisão limitada: devido à correlação moderada, a altura sozinha não é suficiente para estimar com precisão o tamanho da copa — reforçando a necessidade de medições independentes e inspeções presenciais.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'A análise indica que:\n\nA altura fornece apenas um indicador parcial do tamanho da copa.\n\nO manejo urbano precisa considerar múltiplos fatores — especialmente espécie e histórico de podas — para prever adequadamente o comportamento da copa.\n\nEstratégias de arborização devem priorizar espécies compatíveis com o espaço disponível, evitando que copas se tornem desproporcionalmente grandes em locais estreitos.\n\nA correlação moderada justifica o uso de modelos mais completos, incorporando outras variáveis dendrométricas para melhorar previsões.\n\nConclusão: A relação Altura × Copa apresenta tendência positiva, mas com grande variabilidade. Isso reforça que a gestão da arborização urbana deve ser baseada em medições específicas da copa, e não apenas em proxies como altura ou DAP.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
+        # Adiciona análise específica para GRAFICO_020
+        if grafico_id == 'GRAFICO_020':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'Este gráfico apresenta a relação entre a altura das árvores e o diâmetro à altura do peito (DAP) em um bairro do Recife.\nA linha tracejada representa a tendência linear observada na amostra.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'O padrão visível no gráfico mostra uma correlação forte (r = 0.75) entre altura e DAP. Isso significa que:\n\nÁrvores mais altas tendem a ter troncos mais espessos.\n\nO crescimento vertical está fortemente associado ao crescimento radial (espessamento do tronco).\n\nEmbora exista variação natural entre espécies e condições urbanas, o alinhamento geral dos pontos confirma um padrão estrutural consistente.\n\nA dispersão crescente em alturas maiores é esperada, pois espécies diferentes atingem proporções distintas mesmo em condições urbanas semelhantes.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'Compreender essa relação é fundamental para o manejo urbano:\n\nEstimativa rápida do porte estrutural: o DAP pode ser usado como indicador confiável da altura provável de uma árvore quando medições completas não são possíveis.\n\nPlanejamento de podas e segurança: árvores com DAP elevado tendem a apresentar maior massa e exigem maior atenção em inspeções, especialmente em áreas com risco de queda.\n\nModelagem preditiva: a força da correlação justifica o uso de modelos estatísticos que utilizem o DAP para estimar biomassa, risco estrutural ou necessidade de manutenção.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'Os resultados sugerem que o DAP é uma métrica robusta para representar o porte da árvore e apoiar decisões técnicas no contexto urbano.\n\nConclusões práticas:\n\nO DAP pode auxiliar na priorização de vistorias, concentrando esforços em árvores com maior potencial de massa e impacto urbano.\n\nA relação forte entre altura e DAP contribui para modelos de previsão de crescimento e para diagnósticos estruturais.\n\nDados dessa natureza são importantes para políticas públicas de arborização, permitindo gestão preventiva, eficiente e baseada em evidências.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
+        card_content.append(
+            dbc.CardBody(card_body_content, style={'padding': '1.5rem', 'textAlign': 'center'})
         )
         
         # Aplica offset

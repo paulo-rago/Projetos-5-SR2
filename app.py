@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_012
+        if grafico_id == 'GRAFICO_012':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O gráfico apresenta a distribuição das alturas das árvores no Recife, revelando que a maior parte dos indivíduos registrados possui baixa estatura, concentrando-se majoritariamente entre 0 e 4 metros. À medida que a altura aumenta, a frequência de árvores diminui de forma acentuada.\nIsso evidencia um perfil arbóreo predominantemente composto por espécies jovens, de pequeno porte ou recentemente plantadas.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'A distribuição claramente assimétrica indica que o patrimônio arbóreo da área analisada é formado majoritariamente por árvores baixas, com poucos exemplares de grande porte.\nA presença reduzida de árvores altas (acima de 10 m) pode refletir fatores como:\n\nlimitações estruturais e urbanas (calçadas estreitas, fiação aérea),\n\npredominância de espécies de porte pequeno/médio em plantios recentes,\n\nsubstituição ou remoção de árvores antigas,\n\nprocessos de poda intensiva.\n\nA curva suavizada ajuda a visualizar essa tendência, reforçando que a distribuição não é uniforme e que há um declínio progressivo na frequência conforme a altura aumenta.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'Compreender a distribuição de alturas é importante porque:\n\nauxilia no planejamento de novas arborizações, indicando onde há predominância de árvores jovens ou de baixo porte;\n\norienta decisões sobre espaçamento, escolha de espécies e infraestrutura necessária;\n\npermite identificar o estado de maturidade do conjunto arbóreo da região;\n\nsinaliza a necessidade de estratégias de manejo para favorecer o crescimento saudável e o desenvolvimento de exemplares de maior porte, essenciais para sombreamento e conforto térmico.\n\nÁrvores mais altas oferecem benefícios ambientais maiores (sombra, resfriamento, captura de carbono), mas a baixa proporção delas indica que esses serviços podem estar subdimensionados.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'A configuração observada sugere que a arborização da área analisada passa por uma fase de renovação ou expansão recente, marcada por indivíduos jovens de menor porte.\nIsso pode orientar:\n\nações de monitoramento de crescimento ao longo dos próximos anos,\n\npolíticas de plantio que incluam espécies capazes de atingir maior porte, quando compatível com o espaço urbano,\n\nesforços para garantir condições adequadas (solo, irrigação, manejo) que permitam que os exemplares existentes atinjam plenamente seu desenvolvimento.\n\nEntender o perfil altimétrico das árvores é essencial para um planejamento urbano que maximize os benefícios ambientais e garanta um manejo adequado do patrimônio arbóreo do Recife.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_008
         if grafico_id == 'GRAFICO_008':
             # Análise estruturada por seções

@@ -1,12 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
-const RecommendationsCard = () => {
-  const recommendations = [
-    { region: "RPA 2", species: ["Craibeira", "Ipê Amarelo", "Pau-Brasil"] },
-    { region: "RPA 1", species: ["Palmeira Imperial", "Jenipapeiro"] },
-    { region: "Zona Norte", species: ["Algarobeira", "Mangueira"] },
-  ];
+interface Recommendation {
+  region: string;
+  species: string[];
+}
+
+interface RecommendationsCardProps {
+  recommendations: Recommendation[];
+}
+
+const RecommendationsCard = ({ recommendations }: RecommendationsCardProps) => {
 
   return (
     <div className="card-elevated p-5 bg-accent/50 border-primary/20">

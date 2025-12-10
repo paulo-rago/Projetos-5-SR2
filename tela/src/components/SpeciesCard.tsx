@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { BadgeType } from "@/data/mockData";
 
 interface SpeciesCardProps {
   name: string;
   scientificName: string;
-  badge: "Nativa" | "Frutífera";
+  badge: BadgeType;
   size: string;
   height: string;
   canopy: string;
@@ -11,6 +12,8 @@ interface SpeciesCardProps {
   stock: number;
   limitedStock?: boolean;
   imageUrl: string;
+  isSelected?: boolean;
+  onToggleSelect?: () => void;
 }
 
 const SpeciesCard = ({
@@ -24,9 +27,15 @@ const SpeciesCard = ({
   stock,
   limitedStock,
   imageUrl,
+  isSelected = false,
+  onToggleSelect,
 }: SpeciesCardProps) => {
   return (
-    <div className="card-elevated overflow-hidden group hover:shadow-card-hover transition-shadow duration-300 animate-fade-in">
+    <div
+      className={`card-elevated overflow-hidden group hover:shadow-card-hover transition-shadow duration-300 animate-fade-in ${
+        isSelected ? "ring-2 ring-primary" : ""
+      }`}
+    >
       {/* Image */}
       <div className="relative h-44 overflow-hidden">
         <img
@@ -34,6 +43,11 @@ const SpeciesCard = ({
           alt={name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        {isSelected && (
+          <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <span className="text-white text-xs">✓</span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -44,7 +58,17 @@ const SpeciesCard = ({
             <h3 className="font-semibold text-foreground">{name}</h3>
             <p className="text-sm text-muted-foreground italic">{scientificName}</p>
           </div>
-          <span className={badge === "Nativa" ? "badge-native" : "badge-fruit"}>
+          <span
+            className={
+              badge === "Nativa"
+                ? "badge-native"
+                : badge === "Frutífera"
+                ? "badge-fruit"
+                : badge === "Exótica"
+                ? "px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                : "px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+            }
+          >
             {badge}
           </span>
         </div>
@@ -92,9 +116,14 @@ const SpeciesCard = ({
           </Button>
           <Button
             size="sm"
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className={`flex-1 ${
+              isSelected
+                ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                : "bg-primary hover:bg-primary/90 text-primary-foreground"
+            }`}
+            onClick={onToggleSelect}
           >
-            Adicionar ao plano
+            {isSelected ? "Remover" : "Adicionar ao plano"}
           </Button>
         </div>
       </div>

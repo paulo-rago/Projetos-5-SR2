@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import FiltersPanel from "@/components/FiltersPanel";
 import SpeciesCard from "@/components/SpeciesCard";
 import ComparisonTable from "@/components/ComparisonTable";
@@ -11,56 +12,120 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { mockSpecies, mockRecommendations } from "@/data/mockData";
 
-const speciesData = [
-  {
-    name: "Ipê Amarelo",
-    scientificName: "Handroanthus albus",
-    badge: "Nativa" as const,
-    size: "Médio",
-    height: "8–15m",
-    canopy: "25–40m²",
-    tags: ["Avenidas", "Praças"],
-    stock: 320,
-    imageUrl: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&h=300&fit=crop",
-  },
-  {
-    name: "Mangueira",
-    scientificName: "Mangifera indica",
-    badge: "Frutífera" as const,
-    size: "Grande",
-    height: "15–30m",
-    canopy: "80–120m²",
-    tags: ["Praças"],
-    stock: 156,
-    imageUrl: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=400&h=300&fit=crop",
-  },
-  {
-    name: "Pau-Brasil",
-    scientificName: "Caesalpinia echinata",
-    badge: "Nativa" as const,
-    size: "Médio",
-    height: "10–15m",
-    canopy: "15–25m²",
-    tags: ["Avenidas", "Escolas"],
-    stock: 12,
-    limitedStock: true,
-    imageUrl: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400&h=300&fit=crop",
-  },
-  {
-    name: "Craibeira",
-    scientificName: "Tabebuia aurea",
-    badge: "Nativa" as const,
-    size: "Pequeno",
-    height: "4–8m",
-    canopy: "8–15m²",
-    tags: ["Ruas estreitas", "Escolas"],
-    stock: 89,
-    imageUrl: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=400&h=300&fit=crop",
-  },
-];
+type SortOption = "relevance" | "name" | "stock";
+
+interface Filters {
+  search: string;
+  categories: string[];
+  sizes: string[];
+  recommendations: string[];
+  conditions: string[];
+}
 
 const Index = () => {
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    categories: [],
+    sizes: [],
+    recommendations: [],
+    conditions: [],
+  });
+  const [sortBy, setSortBy] = useState<SortOption>("relevance");
+  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
+
+  // Filtrar espécies baseado nos filtros
+  const filteredSpecies = useMemo(() => {
+    let filtered = [...mockSpecies];
+
+    // Filtro de busca
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(
+        (species) =>
+          species.name.toLowerCase().includes(searchLower) ||
+          species.scientificName.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filtro de categorias
+    if (filters.categories.length > 0) {
+      filtered = filtered.filter((species) =>
+        filters.categories.includes(species.badge)
+      );
+    }
+
+    // Filtro de tamanhos
+    if (filters.sizes.length > 0) {
+      const sizeMap: Record<string, string> = {
+        "Pequeno porte": "Pequeno",
+        "Médio porte": "Médio",
+        "Grande porte": "Grande",
+      };
+      const mappedSizes = filters.sizes.map((s) => sizeMap[s] || s);
+      filtered = filtered.filter((species) =>
+        mappedSizes.includes(species.size)
+      );
+    }
+
+    // Filtro de recomendações (tags)
+    if (filters.recommendations.length > 0) {
+      filtered = filtered.filter((species) =>
+        filters.recommendations.some((rec) => species.tags.includes(rec))
+      );
+    }
+
+    // Filtro de condições ambientais
+    if (filters.conditions.length > 0) {
+      filtered = filtered.filter((species) => {
+        if (filters.conditions.includes("Resistência ao sol pleno")) {
+          if (!species.sunResistance) return false;
+        }
+        if (filters.conditions.includes("Resistência a alagamentos")) {
+          if (!species.floodResistance) return false;
+        }
+        if (filters.conditions.includes("Baixa manutenção")) {
+          if (!species.lowMaintenance) return false;
+        }
+        return true;
+      });
+    }
+
+    return filtered;
+  }, [filters]);
+
+  // Ordenar espécies
+  const sortedSpecies = useMemo(() => {
+    const sorted = [...filteredSpecies];
+    switch (sortBy) {
+      case "name":
+        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+      case "stock":
+        return sorted.sort((a, b) => b.stock - a.stock);
+      case "relevance":
+      default:
+        // Ordenar por relevância (estoque + popularidade)
+        return sorted.sort((a, b) => {
+          const scoreA = a.stock + (a.limitedStock ? -50 : 0);
+          const scoreB = b.stock + (b.limitedStock ? -50 : 0);
+          return scoreB - scoreA;
+        });
+    }
+  }, [filteredSpecies, sortBy]);
+
+  const handleToggleSpecies = (speciesId: string) => {
+    setSelectedSpecies((prev) =>
+      prev.includes(speciesId)
+        ? prev.filter((id) => id !== speciesId)
+        : [...prev, speciesId]
+    );
+  };
+
+  const selectedSpeciesData = useMemo(() => {
+    return sortedSpecies.filter((s) => selectedSpecies.includes(s.id));
+  }, [sortedSpecies, selectedSpecies]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Main Content */}
@@ -82,7 +147,10 @@ const Index = () => {
           <div className="flex gap-6">
             {/* Left Column - Filters */}
             <aside className="w-72 flex-shrink-0">
-              <FiltersPanel />
+              <FiltersPanel
+                filters={filters}
+                onFiltersChange={setFilters}
+              />
             </aside>
 
             {/* Right Column - Main Content */}
@@ -90,9 +158,12 @@ const Index = () => {
               {/* Species List Header */}
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">
-                  Espécies encontradas (24)
+                  Espécies encontradas ({sortedSpecies.length})
                 </h2>
-                <Select defaultValue="relevance">
+                <Select
+                  value={sortBy}
+                  onValueChange={(value) => setSortBy(value as SortOption)}
+                >
                   <SelectTrigger className="w-52 bg-card border-border">
                     <SelectValue placeholder="Ordenar por" />
                   </SelectTrigger>
@@ -106,21 +177,27 @@ const Index = () => {
 
               {/* Species Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                {speciesData.map((species, index) => (
+                {sortedSpecies.map((species, index) => (
                   <div
-                    key={species.name}
+                    key={species.id}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <SpeciesCard {...species} />
+                    <SpeciesCard
+                      {...species}
+                      isSelected={selectedSpecies.includes(species.id)}
+                      onToggleSelect={() => handleToggleSpecies(species.id)}
+                    />
                   </div>
                 ))}
               </div>
 
               {/* Comparison Table */}
-              <ComparisonTable />
+              {selectedSpeciesData.length > 0 && (
+                <ComparisonTable species={selectedSpeciesData} />
+              )}
 
               {/* Recommendations */}
-              <RecommendationsCard />
+              <RecommendationsCard recommendations={mockRecommendations} />
 
               {/* Action Buttons */}
               <ActionButtons />

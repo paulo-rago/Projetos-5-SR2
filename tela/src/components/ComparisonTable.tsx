@@ -7,20 +7,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Species } from "@/data/mockData";
 
-const ComparisonTable = () => {
-  const data = [
-    { attribute: "Porte", ipe: "Médio", manga: "Grande", craibeira: "Pequeno" },
-    { attribute: "Altura", ipe: "8–15m", manga: "15–30m", craibeira: "4–8m" },
-    { attribute: "Tipo de raiz", ipe: "Profunda", manga: "Agressiva", craibeira: "Superficial" },
-    { attribute: "Sombreamento", ipe: "Alto", manga: "Muito alto", craibeira: "Médio" },
-    { attribute: "Manutenção", ipe: "Baixa", manga: "Média", craibeira: "Baixa" },
+interface ComparisonTableProps {
+  species: Species[];
+}
+
+const ComparisonTable = ({ species }: ComparisonTableProps) => {
+  if (species.length === 0) {
+    return null;
+  }
+
+  const attributes = [
+    { key: "size", label: "Porte" },
+    { key: "height", label: "Altura" },
+    { key: "rootType", label: "Tipo de raiz" },
+    { key: "shading", label: "Sombreamento" },
+    { key: "maintenance", label: "Manutenção" },
   ];
+
+  const getAttributeValue = (species: Species, key: string): string => {
+    switch (key) {
+      case "size":
+        return species.size;
+      case "height":
+        return species.height;
+      case "rootType":
+        return species.rootType;
+      case "shading":
+        return species.shading;
+      case "maintenance":
+        return species.maintenance;
+      default:
+        return "";
+    }
+  };
 
   return (
     <div className="card-elevated p-5">
       <h2 className="text-lg font-semibold text-foreground mb-4">
-        Comparar Espécies Selecionadas
+        Comparar Espécies Selecionadas ({species.length})
       </h2>
 
       <div className="overflow-x-auto">
@@ -28,18 +54,27 @@ const ComparisonTable = () => {
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">
               <TableHead className="text-foreground font-semibold">Atributo</TableHead>
-              <TableHead className="text-foreground font-semibold">Ipê Amarelo</TableHead>
-              <TableHead className="text-foreground font-semibold">Mangueira</TableHead>
-              <TableHead className="text-foreground font-semibold">Craibeira</TableHead>
+              {species.map((s) => (
+                <TableHead key={s.id} className="text-foreground font-semibold">
+                  {s.name}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.attribute} className="border-border hover:bg-secondary/30">
-                <TableCell className="font-medium text-foreground">{row.attribute}</TableCell>
-                <TableCell className="text-muted-foreground">{row.ipe}</TableCell>
-                <TableCell className="text-muted-foreground">{row.manga}</TableCell>
-                <TableCell className="text-muted-foreground">{row.craibeira}</TableCell>
+            {attributes.map((attr) => (
+              <TableRow
+                key={attr.key}
+                className="border-border hover:bg-secondary/30"
+              >
+                <TableCell className="font-medium text-foreground">
+                  {attr.label}
+                </TableCell>
+                {species.map((s) => (
+                  <TableCell key={s.id} className="text-muted-foreground">
+                    {getAttributeValue(s, attr.key)}
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>

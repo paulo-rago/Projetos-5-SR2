@@ -1012,6 +1012,55 @@ def _render_notebook_graficos():
             )
         ]
         
+        # Adiciona análise específica para GRAFICO_014
+        if grafico_id == 'GRAFICO_014':
+            # Análise estruturada por seções
+            secoes_analise = [
+                {
+                    'titulo': 'O que o gráfico evidencia',
+                    'conteudo': 'O gráfico apresenta as espécies arbóreas mais comuns registradas no Bairro do Recife.\nAs espécies com maior número de indivíduos são:\n\nPau-ferro — espécie mais frequente, com cerca de 37 registros.\n\nIpê-amarelo — segunda mais presente.\n\nPalmeira-imperial — também aparece em grande quantidade.\n\nSapotí-do-mangue — distribuição significativa.\n\nIpê-roxo — frequência baixa em comparação às demais.'
+                },
+                {
+                    'titulo': 'Interpretação e análise',
+                    'conteudo': 'O predomínio de pau-ferro e ipê-amarelo indica preferência por espécies nativas ou adaptadas ao clima e às condições urbanas do Recife.\nA presença relevante da palmeira-imperial, apesar de não ser nativa, mostra seu uso tradicional em vias e espaços públicos.\n\nA baixa quantidade de ipê-roxo pode indicar:\n\nmenor uso recente em plantios,\n\nmaior mortalidade,\n\ndisponibilidade reduzida na arborização da região.'
+                },
+                {
+                    'titulo': 'Impactos e relevância',
+                    'conteudo': 'Conhecer as espécies mais frequentes ajuda a entender:\n\na composição florística da arborização local;\n\na diversidade, que impacta na resiliência contra pragas e doenças;\n\na predominância de espécies adaptadas ao espaço urbano.\n\nO fato de poucas espécies dominarem o cenário pode indicar baixa diversidade, o que aumenta risco de vulnerabilidade fitossanitária.'
+                },
+                {
+                    'titulo': 'Implicações práticas e conclusões',
+                    'conteudo': 'O resultado apoia decisões sobre:\n\ndiversificação de espécies em novos plantios,\n\nreposição adequada quando houver remoções,\n\nestratégias de conservação e manejo das espécies dominantes.\n\nO equilíbrio entre espécies frequentes e a introdução controlada de novas espécies pode melhorar a qualidade e resiliência da arborização urbana.'
+                }
+            ]
+            
+            # Adiciona separador antes da análise
+            card_body_content.append(html.Hr(style={'margin': '2rem 0', 'borderColor': COLORS['border']}))
+            
+            # Adiciona cada seção da análise
+            for secao in secoes_analise:
+                card_body_content.append(
+                    html.Div([
+                        html.H5(secao['titulo'], style={
+                            'fontWeight': '700',
+                            'color': COLORS['primary'],
+                            'marginBottom': '1rem',
+                            'fontSize': '1.1rem',
+                            'marginTop': '0'
+                        }),
+                        html.P(
+                            secao['conteudo'],
+                            style={
+                                'whiteSpace': 'pre-line',
+                                'lineHeight': '1.8',
+                                'color': COLORS['dark'],
+                                'marginBottom': '1.5rem',
+                                'textAlign': 'justify'
+                            }
+                        )
+                    ], style={'marginBottom': '1.5rem', 'textAlign': 'left'})
+                )
+        
         # Adiciona análise específica para GRAFICO_012
         if grafico_id == 'GRAFICO_012':
             # Análise estruturada por seções

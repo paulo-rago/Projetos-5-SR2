@@ -1057,21 +1057,47 @@ def _render_notebook_graficos():
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'Este gráfico apresenta as espécies com maior altura média entre as árvores registradas no Bairro do Recife.\nA ordem mostra que:\n\nSapotí-do-mangue — maior altura média (~4 m).\n\nPalmeira-imperial — próxima de 4 m também.\n\nPau-ferro — atinge média pouco abaixo de 3,5 m.\n\nIpê-roxo — altura média intermediária (~3 m).\n\nIpê-amarelo — entre as menores médias (~2,5 m).'
+                    'conteudo': (
+                        'Este gráfico apresenta as espécies com maior altura média entre as árvores registradas no Bairro do Recife.\n'
+                        'A ordem mostra que:\n\n'
+                        '- Sapotí-do-mangue — maior altura média (~4 m).\n'
+                        '- Palmeira-imperial — próxima de 4 m também.\n'
+                        '- Pau-ferro — atinge média pouco abaixo de 3,5 m.\n'
+                        '- Ipê-roxo — altura média intermediária (~3 m).\n'
+                        '- Ipê-amarelo — entre as menores médias (~2,5 m).'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'Há diferença entre frequência (Gráfico 014) e porte médio (Gráfico 015):\n\nAlgumas espécies são numerosas, mas não necessariamente altas (ex.: ipê-amarelo é muito frequente, mas com menor altura média).\n\nOutras possuem poucos indivíduos, porém atingem porte mais elevado (ex.: sapotí-do-mangue).\n\nA palmeira-imperial aparece entre as mais altas, condizente com sua morfologia característica.'
+                    'conteudo': (
+                        'Há diferença entre frequência (Gráfico 014) e porte médio (Gráfico 015):\n\n'
+                        '- Algumas espécies são numerosas, mas não necessariamente altas (ex.: ipê-amarelo).\n'
+                        '- Outras possuem poucos indivíduos, porém atingem maior porte (ex.: sapotí-do-mangue).\n'
+                        '- A palmeira-imperial aparece entre as mais altas, condizente com sua morfologia característica.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'A variação na altura média tem impacto direto em:\n\nsombreamento,\n\nconforto térmico,\n\nocupação de espaço urbano,\n\nadequação a calçadas e fiação,\n\nplanejamento de vias arborizadas.\n\nEspécies mais altas, como palmeiras e sapotí-do-mangue, tendem a oferecer mais benefícios ambientais, mas exigem maior planejamento no plantio.'
+                    'conteudo': (
+                        'A variação na altura média tem impacto direto em:\n\n'
+                        '- sombreamento;\n'
+                        '- conforto térmico;\n'
+                        '- ocupação de espaço urbano;\n'
+                        '- adequação a calçadas e fiação;\n'
+                        '- planejamento de vias arborizadas.\n\n'
+                        'Espécies mais altas tendem a oferecer mais benefícios ambientais, mas exigem maior planejamento no plantio.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'Os dados indicam quais espécies:\n\ncontribuem mais para cobertura vegetal vertical,\n\ndemandam espaço adequado para pleno desenvolvimento,\n\npodem ser priorizadas em áreas amplas e evitadas em áreas restritas.\n\nA combinação entre a análise de frequência e altura média é essencial para planejar plantios equilibrados e garantir o desenvolvimento saudável do patrimônio arbóreo.'
+                    'conteudo': (
+                        'Os dados indicam quais espécies contribuem mais para a cobertura vegetal vertical, demandam mais espaço '
+                        'e devem ser priorizadas em áreas amplas. A combinação entre frequência e altura média é essencial para o '
+                        'planejamento equilibrado do patrimônio arbóreo.'
+                    )
                 }
             ]
+
             
             # Usa função padronizada para renderizar análise
             _render_secoes_analise(card_body_content, secoes_analise)
@@ -1082,19 +1108,45 @@ def _render_notebook_graficos():
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'O gráfico apresenta as espécies arbóreas mais comuns registradas no Bairro do Recife.\nAs espécies com maior número de indivíduos são:\n\nPau-ferro — espécie mais frequente, com cerca de 37 registros.\n\nIpê-amarelo — segunda mais presente.\n\nPalmeira-imperial — também aparece em grande quantidade.\n\nSapotí-do-mangue — distribuição significativa.\n\nIpê-roxo — frequência baixa em comparação às demais.'
+                    'conteudo': (
+                        'O gráfico apresenta as espécies arbóreas mais comuns registradas no Bairro do Recife, '
+                        'formando o "Top 5" da frequência local:\n\n'
+                        '- Pau-ferro — espécie com maior número de indivíduos.\n'
+                        '- Ipê-amarelo — forte presença na área.\n'
+                        '- Palmeira-imperial — destaque entre as monocotiledôneas.\n'
+                        '- Sapotí-do-mangue — frequência intermediária.\n'
+                        '- Ipê-roxo — fecha o grupo das mais comuns.'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'O predomínio de pau-ferro e ipê-amarelo indica preferência por espécies nativas ou adaptadas ao clima e às condições urbanas do Recife.\nA presença relevante da palmeira-imperial, apesar de não ser nativa, mostra seu uso tradicional em vias e espaços públicos.\n\nA baixa quantidade de ipê-roxo pode indicar:\n\nmenor uso recente em plantios,\n\nmaior mortalidade,\n\ndisponibilidade reduzida na arborização da região.'
+                    'conteudo': (
+                        'A distribuição das espécies reflete critérios de paisagismo e adaptação:\n\n'
+                        '- O predomínio de Pau-ferro e Ipê-amarelo indica preferência por espécies rústicas e adaptadas ao clima.\n'
+                        '- A presença da Palmeira-imperial remete ao paisagismo histórico e monumental.\n'
+                        '- A menor quantidade de Ipê-roxo (comparado ao amarelo) pode sinalizar menor disponibilidade de mudas '
+                        'ou preferência estética em plantios passados.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'Conhecer as espécies mais frequentes ajuda a entender:\n\na composição florística da arborização local;\n\na diversidade, que impacta na resiliência contra pragas e doenças;\n\na predominância de espécies adaptadas ao espaço urbano.\n\nO fato de poucas espécies dominarem o cenário pode indicar baixa diversidade, o que aumenta risco de vulnerabilidade fitossanitária.'
+                    'conteudo': (
+                        'A análise da frequência é fundamental para o manejo sanitário e ecológico, pois permite:\n\n'
+                        '- avaliar a diversidade do patrimônio arbóreo;\n'
+                        '- identificar riscos associados à baixa variabilidade;\n'
+                        '- prevenir a disseminação rápida de pragas (comum em monoculturas).\n\n'
+                        'A concentração excessiva em poucas espécies pode tornar a arborização urbana mais vulnerável.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'O resultado apoia decisões sobre:\n\ndiversificação de espécies em novos plantios,\n\nreposição adequada quando houver remoções,\n\nestratégias de conservação e manejo das espécies dominantes.\n\nO equilíbrio entre espécies frequentes e a introdução controlada de novas espécies pode melhorar a qualidade e resiliência da arborização urbana.'
+                    'conteudo': (
+                        'Os dados fundamentam o planejamento futuro da arborização no Recife, sugerindo a necessidade de:\n\n'
+                        '- diversificar os novos plantios para reduzir a dominância de poucas espécies;\n'
+                        '- planejar reposições que aumentem a heterogeneidade florística;\n'
+                        '- monitorar a saúde dos exemplares dominantes (Pau-ferro e Ipês).\n\n'
+                        'Uma floresta urbana mais diversa é mais resiliente e ecologicamente equilibrada.'
+                    )
                 }
             ]
             
@@ -1111,15 +1163,15 @@ def _render_notebook_graficos():
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'A distribuição claramente assimétrica indica que o patrimônio arbóreo da área analisada é formado majoritariamente por árvores baixas, com poucos exemplares de grande porte.\nA presença reduzida de árvores altas (acima de 10 m) pode refletir fatores como:\n\nlimitações estruturais e urbanas (calçadas estreitas, fiação aérea),\n\npredominância de espécies de porte pequeno/médio em plantios recentes,\n\nsubstituição ou remoção de árvores antigas,\n\nprocessos de poda intensiva.\n\nA curva suavizada ajuda a visualizar essa tendência, reforçando que a distribuição não é uniforme e que há um declínio progressivo na frequência conforme a altura aumenta.'
+                    'conteudo': 'A distribuição claramente assimétrica indica que o patrimônio arbóreo da área analisada é formado majoritariamente por árvores baixas, com poucos exemplares de grande porte.\nA presença reduzida de árvores altas (acima de 10 m) pode refletir fatores como:\n-limitações estruturais e urbanas (calçadas estreitas, fiação aérea),\n-predominância de espécies de porte pequeno/médio em plantios recentes,\n-substituição ou remoção de árvores antigas,\n-processos de poda intensiva.\n\nA curva suavizada ajuda a visualizar essa tendência, reforçando que a distribuição não é uniforme e que há um declínio progressivo na frequência conforme a altura aumenta.'
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'Compreender a distribuição de alturas é importante porque:\n\nauxilia no planejamento de novas arborizações, indicando onde há predominância de árvores jovens ou de baixo porte;\n\norienta decisões sobre espaçamento, escolha de espécies e infraestrutura necessária;\n\npermite identificar o estado de maturidade do conjunto arbóreo da região;\n\nsinaliza a necessidade de estratégias de manejo para favorecer o crescimento saudável e o desenvolvimento de exemplares de maior porte, essenciais para sombreamento e conforto térmico.\n\nÁrvores mais altas oferecem benefícios ambientais maiores (sombra, resfriamento, captura de carbono), mas a baixa proporção delas indica que esses serviços podem estar subdimensionados.'
+                    'conteudo': 'Compreender a distribuição de alturas é importante porque:\n\n-auxilia no planejamento de novas arborizações, indicando onde há predominância de árvores jovens ou de baixo porte;\n-orienta decisões sobre espaçamento, escolha de espécies e infraestrutura necessária;\n-permite identificar o estado de maturidade do conjunto arbóreo da região;\n-sinaliza a necessidade de estratégias de manejo para favorecer o crescimento saudável e o desenvolvimento de exemplares de maior porte, essenciais para sombreamento e conforto térmico.\n-Árvores mais altas oferecem benefícios ambientais maiores (sombra, resfriamento, captura de carbono), mas a baixa proporção delas indica que esses serviços podem estar subdimensionados na região analisada.'
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'A configuração observada sugere que a arborização da área analisada passa por uma fase de renovação ou expansão recente, marcada por indivíduos jovens de menor porte.\nIsso pode orientar:\n\nações de monitoramento de crescimento ao longo dos próximos anos,\n\npolíticas de plantio que incluam espécies capazes de atingir maior porte, quando compatível com o espaço urbano,\n\nesforços para garantir condições adequadas (solo, irrigação, manejo) que permitam que os exemplares existentes atinjam plenamente seu desenvolvimento.\n\nEntender o perfil altimétrico das árvores é essencial para um planejamento urbano que maximize os benefícios ambientais e garanta um manejo adequado do patrimônio arbóreo do Recife.'
+                    'conteudo': 'A configuração observada sugere que a arborização da área analisada passa por uma fase de renovação ou expansão recente, marcada por indivíduos jovens de menor porte.\n\nIsso pode orientar:\n-ações de monitoramento de crescimento ao longo dos próximos anos;\n-políticas de plantio que incluam espécies capazes de atingir maior porte, quando compatível com o espaço urbano;\n-esforços para garantir condições adequadas (solo, irrigação, manejo) que permitam que os exemplares existentes atinjam plenamente seu desenvolvimento.\n\nEntender o perfil altimétrico das árvores é essencial para um planejamento urbano que maximize os benefícios ambientais e garanta um manejo adequado do patrimônio arbóreo do Recife.'
                 }
             ]
             
@@ -1128,23 +1180,45 @@ def _render_notebook_graficos():
         
         # Adiciona análise específica para GRAFICO_008
         if grafico_id == 'GRAFICO_008':
-            # Análise estruturada por seções
+    # Análise estruturada por seções
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'Os gráficos apresentam a distribuição espacial das árvores mapeadas na cidade do Recife, mostrando sua localização tanto em coordenadas geográficas (longitude e latitude) quanto em coordenadas projetadas (x e y, sistema UTM).\nEles permitem visualizar a área urbana coberta pelo levantamento e identificar a densidade espacial dos pontos onde existem registros de arborização.'
+                    'conteudo': (
+                        'Os gráficos apresentam a distribuição espacial das árvores mapeadas na cidade do Recife, mostrando sua '
+                        'localização tanto em coordenadas geográficas (longitude e latitude) quanto em coordenadas projetadas (x e y, sistema UTM).\n'
+                        'Eles permitem visualizar a área urbana coberta pelo levantamento e identificar a densidade espacial dos pontos onde existem registros de arborização.'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'A visualização evidencia como as árvores estão distribuídas pelo território recifense, destacando regiões com maior ou menor concentração de registros.\nA comparação entre o sistema geográfico e o sistema projetado demonstra que a conversão de coordenadas mantém a forma e a posição espacial, permitindo validar a consistência dos dados.\n\nEsses mapas não mostram informações específicas das árvores (como espécies, altura ou estado), mas sim a abrangência e a continuidade do levantamento espacial.'
+                    'conteudo': (
+                        'A visualização evidencia como as árvores estão distribuídas pelo território recifense, destacando regiões com maior ou menor concentração de registros.\n'
+                        'A comparação entre o sistema geográfico e o sistema projetado demonstra que a conversão de coordenadas mantém a forma e a posição espacial, permitindo validar a consistência dos dados.\n\n'
+                        'Esses mapas não mostram informações específicas das árvores (como espécies, altura ou estado), mas sim a abrangência e a continuidade do levantamento espacial.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'Do ponto de vista de gestão urbana, compreender a distribuição espacial das árvores é fundamental para:\n\nidentificar áreas com maior adensamento arbóreo,\n\nreconhecer regiões carentes de arborização,\n\napoiar o planejamento de novos plantios,\n\norientar ações de manutenção e monitoramento do patrimônio arbóreo.\n\nEsse tipo de mapeamento é essencial para políticas públicas de arborização, infraestrutura verde e qualidade ambiental.'
+                    'conteudo': (
+                        'Do ponto de vista de gestão urbana, compreender a distribuição espacial das árvores é fundamental para:\n\n'
+                        '- identificar áreas com maior adensamento arbóreo;\n'
+                        '- reconhecer regiões carentes de arborização;\n'
+                        '- apoiar o planejamento de novos plantios;\n'
+                        '- orientar ações de manutenção e monitoramento do patrimônio arbóreo.\n\n'
+                        'Esse tipo de mapeamento é essencial para políticas públicas de arborização, infraestrutura verde e qualidade ambiental.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'Os gráficos confirmam que o levantamento cobre boa parte da malha urbana, permitindo análises posteriores mais detalhadas, como diversidade de espécies, saúde das árvores e prioridades de intervenção.\nCom base na distribuição espacial observada, é possível:\n\nplanejar de forma mais eficiente corredores verdes,\n\npriorizar áreas com baixa cobertura vegetal,\n\napoiar ações de manejo e conservação.\n\nA representação espacial é, portanto, um passo inicial crucial para qualquer projeto de gestão e análise da arborização urbana.'
+                    'conteudo': (
+                        'Os gráficos confirmam que o levantamento cobre boa parte da malha urbana, permitindo análises posteriores mais detalhadas, como diversidade de espécies, saúde das árvores e prioridades de intervenção.\n\n'
+                        'Com base na distribuição espacial observada, é possível:\n'
+                        '- planejar de forma mais eficiente corredores verdes;\n'
+                        '- priorizar áreas com baixa cobertura vegetal;\n'
+                        '- apoiar ações de manejo e conservação.\n\n'
+                        'A representação espacial é, portanto, um passo inicial crucial para qualquer projeto de gestão e análise da arborização urbana.'
+                    )
                 }
             ]
             
@@ -1153,23 +1227,69 @@ def _render_notebook_graficos():
         
         # Adiciona análise específica para GRAFICO_006
         if grafico_id == 'GRAFICO_006':
-            # Análise estruturada por seções
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'O conjunto de gráficos avalia se os resíduos de um modelo de regressão atendem aos pressupostos básicos:\n(1) média zero, (2) variância constante (homocedasticidade) e (3) distribuição aproximadamente normal.'
+                    'conteudo': (
+                        'O conjunto de gráficos avalia se os resíduos de um modelo de regressão atendem aos pressupostos básicos:\n'
+                        '1. Média zero;\n'
+                        '2. Variância constante (homocedasticidade);\n'
+                        '3. Distribuição aproximadamente normal.'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': '1️⃣ Resíduos vs Valores Preditos\n\nO que o gráfico mostra:\nO gráfico exibe os resíduos distribuídos em relação aos valores preditos da variável resposta (Copa).\nA linha pontilhada representa o nível zero do resíduo.\n\nInterpretação:\nObserva-se um padrão triangular/abaulado, onde a dispersão dos resíduos aumenta conforme o valor predito cresce.\nIsso indica heterocedasticidade: os erros não possuem variância constante.\nHá faixas diagonais com maior densidade de pontos, sugerindo possíveis restrições nas variáveis ou agrupamentos naturais dos dados.\nA média dos resíduos parece estar próxima de zero, mas a variabilidade não é uniforme.\n\nConclusão:\nO modelo parece apresentar violação da homocedasticidade, o que reduz a qualidade das inferências estatísticas (ex.: intervalos de confiança e testes).\n\n2️⃣ Histograma dos Resíduos\n\nO que o gráfico mostra:\nO histograma apresenta a distribuição dos resíduos, juntamente com uma curva suavizada (KDE).\n\nInterpretação:\nA distribuição é aproximadamente simétrica, mas não perfeitamente normal.\nHá leve concentração na região central (entre -2 e 2), mas também existe:\ncauda mais alongada à direita,\nalguns valores mais extremos (outliers) tanto à direita quanto à esquerda.\nA forma geral é parecida com uma normal, mas com pequenas distorções.\n\nConclusão:\nOs resíduos mostram uma quase-normalidade, mas com pequenas assimetrias e presença de valores extremos.\nIsso não invalida o modelo, porém indica que o ajuste não é perfeito.\n\n3️⃣ Q-Q Plot (Normalidade)\n\nO que o gráfico mostra:\nO Q-Q plot compara os quantis dos resíduos com os quantis esperados de uma distribuição normal.\n\nInterpretação:\nA parte central dos pontos está bem alinhada com a linha teórica → boa aderência à normalidade nesta região.\nNas extremidades (caudas), os pontos se afastam da linha:\nCauda inferior mais dispersa,\nCauda superior com resíduos mais altos que o esperado.\nIsso confirma a presença de pequenas distorções na normalidade, principalmente nos valores extremos.\n\nConclusão:\nA distribuição dos resíduos é quase normal, mas com desvios nas caudas, o que confirma o visto no histograma.'
+                    'conteudo': (
+                        '1. Resíduos vs Valores Preditos\n\n'
+                        'O que o gráfico mostra:\n'
+                        'O gráfico exibe os resíduos distribuídos em relação aos valores preditos da variável resposta (Copa). A linha pontilhada representa o nível zero do resíduo.\n\n'
+                        'Interpretação:\n'
+                        '- Observa-se um padrão triangular/abaulado, onde a dispersão dos resíduos aumenta conforme o valor predito cresce.\n'
+                        '- Isso indica heterocedasticidade: os erros não possuem variância constante.\n'
+                        '- Há faixas diagonais com maior densidade de pontos, sugerindo possíveis restrições nas variáveis ou agrupamentos naturais dos dados.\n'
+                        '- A média dos resíduos parece estar próxima de zero, mas a variabilidade não é uniforme.\n\n'
+                        'Conclusão:\n'
+                        'O modelo parece apresentar violação da homocedasticidade, o que reduz a qualidade das inferências estatísticas (ex.: intervalos de confiança e testes).\n\n'
+                        '--------------------------------------------------\n\n'
+                        '2. Histograma dos Resíduos\n\n'
+                        'O que o gráfico mostra:\n'
+                        'O histograma apresenta a distribuição dos resíduos, juntamente com uma curva suavizada (KDE).\n\n'
+                        'Interpretação:\n'
+                        '- A distribuição é aproximadamente simétrica, mas não perfeitamente normal.\n'
+                        '- Há leve concentração na região central (entre -2 e 2), mas também existe cauda mais alongada à direita e alguns valores mais extremos (outliers) tanto à direita quanto à esquerda.\n'
+                        '- A forma geral é parecida com uma normal, mas com pequenas distorções.\n\n'
+                        'Conclusão:\n'
+                        'Os resíduos mostram uma quase-normalidade, mas com pequenas assimetrias e presença de valores extremos. Isso não invalida o modelo, porém indica que o ajuste não é perfeito.\n\n'
+                        '--------------------------------------------------\n\n'
+                        '3. Q-Q Plot (Normalidade)\n\n'
+                        'O que o gráfico mostra:\n'
+                        'O Q-Q plot compara os quantis dos resíduos com os quantis esperados de uma distribuição normal.\n\n'
+                        'Interpretação:\n'
+                        '- A parte central dos pontos está bem alinhada com a linha teórica, indicando boa aderência à normalidade nesta região.\n'
+                        '- Nas extremidades (caudas), os pontos se afastam da linha: cauda inferior mais dispersa e cauda superior com resíduos mais altos que o esperado.\n'
+                        '- Isso confirma a presença de pequenas distorções na normalidade, principalmente nos valores extremos.\n\n'
+                        'Conclusão:\n'
+                        'A distribuição dos resíduos é quase normal, mas com desvios nas caudas, o que confirma o visto no histograma.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'A avaliação dos pressupostos de regressão é fundamental para:\n\nvalidar a confiabilidade das inferências estatísticas do modelo,\n\nidentificar limitações que podem afetar a qualidade das predições,\n\nguiar melhorias no modelo (transformações, remoção de outliers, modelos alternativos).\n\nAs violações observadas (especialmente a heterocedasticidade) indicam que o modelo requer ajustes ou considerações metodológicas adicionais para garantir resultados mais robustos.'
+                    'conteudo': (
+                        'A avaliação dos pressupostos de regressão é fundamental para:\n\n'
+                        '- Validar a confiabilidade das inferências estatísticas do modelo.\n'
+                        '- Identificar limitações que podem afetar a qualidade das predições.\n'
+                        '- Guiar melhorias no modelo (transformações, remoção de outliers, modelos alternativos).\n\n'
+                        'As violações observadas (especialmente a heterocedasticidade) indicam que o modelo requer ajustes ou considerações metodológicas adicionais para garantir resultados mais robustos.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'Os resultados indicam que:\n\nO modelo apresenta violação da homocedasticidade, reduzindo a confiabilidade dos intervalos de confiança e testes de hipótese.\n\nOs resíduos seguem aproximadamente uma distribuição normal, mas com pequenas assimetrias e presença de outliers.\n\nO Q-Q plot confirma desvios nas caudas da distribuição.\n\nRecomendações:\n\nConsiderar transformações nas variáveis (log, raiz quadrada) para estabilizar a variância.\n\nInvestigar e possivelmente remover outliers ou tratar valores extremos.\n\nAvaliar modelos alternativos (regressão robusta, modelos não-paramétricos) que sejam menos sensíveis a violações de pressupostos.\n\nApesar das limitações identificadas, o modelo pode ser útil para análises exploratórias e compreensão de tendências gerais, mas requer cautela na interpretação de resultados inferenciais.'
+                    'conteudo': (
+                        'Os resultados indicam que:\n'
+                        '- O modelo apresenta violação da homocedasticidade, reduzindo a confiabilidade dos intervalos de confiança e testes de hipótese.\n'
+                        '- Os resíduos seguem aproximadamente uma distribuição normal, mas com pequenas assimetrias e presença de outliers.\n'
+                        '- O Q-Q plot confirma desvios nas caudas da distribuição.'
+                    )
                 }
             ]
             
@@ -1261,15 +1381,15 @@ def _render_notebook_graficos():
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'A análise das distribuições revela padrões importantes:\n\nAltura\n\nA distribuição original apresenta valores fora do padrão (outliers muito altos), o que justifica os ajustes posteriores.\n\nApós dividir valores por 100 e remover alturas iguais a zero, a distribuição se torna mais realista e compatível com a arborização urbana, concentrada principalmente entre 5 e 15 metros.\n\nO histograma final (altura_df_mod) indica um conjunto de árvores predominantemente de porte médio, com poucos indivíduos muito altos.\n\nCAP\n\nOs dados originais de CAP mostram valores extremamente elevados, alguns excedendo 400 cm, indicando erros de catalogação ou medidas excepcionais.\n\nApós remover CAP igual a zero e ajustar medições, a distribuição se estabiliza, concentrando-se entre 50 e 150 cm, condizente com troncos de árvores adultas.\n\nO padrão final reflete uma mistura de espécies jovens e adultas, típica de áreas urbanas com reposições contínuas.\n\nCopa\n\nA distribuição original evidencia valores desproporcionalmente altos em alguns registros, sugerindo anomalias.\n\nApós remover copas zeradas ou inconsistentes e filtrar valores acima de 20 m, a distribuição passa a refletir copas predominantemente entre 2 e 12 metros, que é compatível com o padrão de ruas e praças urbanas.\n\nO histograma final (copa_mod3) apresenta forte assimetria, indicando grande diversidade de espécies e condições de poda.\n\nConclusão analítica\n\nAs transformações aplicadas revelam que os dados brutos continham ruído significativo. Após limpeza e filtragem, emergem padrões que representam melhor a realidade da arborização do Recife: árvores majoritariamente de porte médio, com copa moderada e CAP variando amplamente conforme espécie e idade.'
+                    'conteudo': 'A análise das distribuições revela padrões importantes:\n\nAltura\n-A distribuição original apresenta valores fora do padrão (outliers muito altos), o que justifica os ajustes posteriores.\n-Após dividir valores por 100 e remover alturas iguais a zero, a distribuição se torna mais realista e compatível com a arborização urbana, concentrada principalmente entre 5 e 15 metros.\n-O histograma final (altura_df_mod) indica um conjunto de árvores predominantemente de porte médio, com poucos indivíduos muito altos.\n\nCAP\n-Os dados originais de CAP mostram valores extremamente elevados, alguns excedendo 400 cm, indicando erros de catalogação ou medidas excepcionais.\n-Após remover CAP igual a zero e ajustar medições, a distribuição se estabiliza, concentrando-se entre 50 e 150 cm, condizente com troncos de árvores adultas.\n-O padrão final reflete uma mistura de espécies jovens e adultas, típica de áreas urbanas com reposições contínuas.\n\nCopa\n-A distribuição original evidencia valores desproporcionalmente altos em alguns registros, sugerindo anomalias.\n-Após remover copas zeradas ou inconsistentes e filtrar valores acima de 20 m, a distribuição passa a refletir copas predominantemente entre 2 e 12 metros, que é compatível com o padrão de ruas e praças urbanas.\n-O histograma final (copa_mod3) apresenta forte assimetria, indicando grande diversidade de espécies e condições de poda.\n\nConclusão analítica\n-As transformações aplicadas revelam que os dados brutos continham ruído significativo. Após limpeza e filtragem, emergem padrões que representam melhor a realidade da arborização do Recife: árvores majoritariamente de porte médio, com copa moderada e CAP variando amplamente conforme espécie e idade.'
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'A compreensão das distribuições é fundamental para:\n\nplanejar intervenções adequadas (como poda, remoção de risco e plantio);\n\ndimensionar equipes e custos de manutenção;\n\nidentificar espécies dominantes e sua maturidade;\n\ncorrigir inconsistências no censo arbóreo, melhorando diagnósticos futuros;\n\navaliar riscos estruturais, já que árvores com grande CAP ou copa ampla demandam atenção especial.\n\nA predominância de árvores de porte médio indica uma arborização relativamente jovem ou manejada frequentemente, o que pode impactar benefícios ambientais como sombra e conforto térmico.'
+                    'conteudo': 'A compreensão das distribuições é fundamental para:\n\n-planejar intervenções adequadas (como poda, remoção de risco e plantio);\n-dimensionar equipes e custos de manutenção;\n-identificar espécies dominantes e sua maturidade;\n-corrigir inconsistências no censo arbóreo, melhorando diagnósticos futuros;\n-avaliar riscos estruturais, já que árvores com grande CAP ou copa ampla demandam atenção especial.\n-A predominância de árvores de porte médio indica uma arborização relativamente jovem ou manejada frequentemente, o que pode impactar benefícios ambientais, como sombra e conforto térmico.'
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'As versões filtradas dos dados representam melhor a realidade urbana e devem ser usadas para análises estatísticas ou modelagens preditivas.\n\nA remoção de valores zero e a correção de escalas são passos essenciais para evitar distorções em análises posteriores, como correlações ou regressões.\n\nÁrvores de porte grande são minoria — fato que pode orientar reposições e planejamentos de espécies mais adequadas ao espaço disponível.\n\nA análise detalhada das distribuições permite identificar erros de medição, outliers e padrões estruturais, contribuindo para uma gestão arbórea mais estratégica, segura e eficiente.\n\nSíntese:\nA organização dimensional do acervo arbóreo é essencial para orientar políticas públicas, garantir manejo preventivo e ampliar os benefícios ambientais nas áreas urbanas do Recife.'
+                    'conteudo': 'As versões filtradas dos dados representam melhor a realidade urbana e devem ser usadas para análises estatísticas ou modelagens preditivas.\nA remoção de valores zero e a correção de escalas são passos essenciais para evitar distorções em análises posteriores, como correlações ou regressões.\nÁrvores de porte grande são minoria — fato que pode orientar reposições e planejamentos de espécies mais adequadas ao espaço disponível.\nA análise detalhada das distribuições permite identificar erros de medição, outliers e padrões estruturais, contribuindo para uma gestão arbórea mais estratégica, segura e eficiente.\n\nSíntese: A organização dimensional do acervo arbóreo é essencial para orientar políticas públicas, garantir manejo preventivo e ampliar os benefícios ambientais nas áreas urbanas do Recife.'
                 }
             ]
             
@@ -1278,23 +1398,52 @@ def _render_notebook_graficos():
         
         # Adiciona análise específica para GRAFICO_007
         if grafico_id == 'GRAFICO_007':
-            # Análise estruturada por seções
+    # Análise estruturada por seções
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'O conjunto de gráficos apresenta a avaliação de um modelo de classificação usado para distinguir árvores com copa normal e copa grande no Recife. A matriz de confusão quantifica os acertos e erros, enquanto as curvas ROC e Precision-Recall mostram o desempenho geral em diferentes limiares de decisão.'
+                    'conteudo': (
+                        'O conjunto de gráficos apresenta a avaliação de um modelo de classificação usado para distinguir árvores '
+                        'com copa normal e copa grande no Recife. A matriz de confusão quantifica os acertos e erros, enquanto '
+                        'as curvas ROC e Precision-Recall mostram o desempenho geral em diferentes limiares de decisão.'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'Matriz de confusão\n\nNa base de teste:\n\n181 árvores com copa normal foram classificadas corretamente.\n\n46 árvores com copa grande foram identificadas corretamente.\n\n11 falsos positivos ocorreram (árvores normais classificadas como grandes).\n\n29 falsos negativos ocorreram (árvores grandes classificadas como normais).\n\nO número relativamente alto de falsos negativos sugere que o modelo é conservador: tende a rotular uma árvore como "grande" apenas quando há alta confiança, privilegiando a precisão sobre o recall.\n\nDesempenho geral (ROC e Precision-Recall)\n\nA curva ROC apresenta AUC = 0.93, indicando excelente capacidade discriminativa.\n\nA curva Precision-Recall mostra AP = 0.84, reafirmando bom desempenho mesmo com possível desbalanceamento entre classes.\n\nEsses resultados indicam que o modelo mantém bom equilíbrio entre erro e acerto, e que o limiar de decisão pode ser ajustado sem perda drástica de desempenho.'
+                    'conteudo': (
+                        'Matriz de confusão\n\n'
+                        'Na base de teste:\n'
+                        '- 181 árvores com copa normal foram classificadas corretamente.\n'
+                        '- 46 árvores com copa grande foram identificadas corretamente.\n'
+                        '- 11 falsos positivos ocorreram (árvores normais classificadas como grandes).\n'
+                        '- 29 falsos negativos ocorreram (árvores grandes classificadas como normais).\n\n'
+                        'O número relativamente alto de falsos negativos sugere que o modelo é conservador: tende a rotular uma árvore como "grande" apenas quando há alta confiança, privilegiando a precisão sobre o recall.\n\n'
+                        '--------------------------------------------------\n\n'
+                        'Desempenho geral (ROC e Precision-Recall)\n\n'
+                        '- A curva ROC apresenta AUC = 0.93, indicando excelente capacidade discriminativa.\n'
+                        '- A curva Precision-Recall mostra AP = 0.84, reafirmando bom desempenho mesmo com possível desbalanceamento entre classes.\n\n'
+                        'Esses resultados indicam que o modelo mantém bom equilíbrio entre erro e acerto, e que o limiar de decisão pode ser ajustado sem perda drástica de desempenho.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'A classificação do porte da copa tem aplicações diretas na gestão urbana:\n\nPriorização de podas e vistorias, especialmente para árvores grandes que podem representar risco em áreas adensadas.\n\nRacionalização de equipes e recursos, direcionando intervenções para locais de maior probabilidade de ocorrência de copas grandes.\n\nApoio ao planejamento urbano, ao identificar padrões de desenvolvimento arbóreo em diferentes bairros.\n\nAlém disso, o bom desempenho do modelo reforça a utilidade de métricas dendrométricas—especialmente CAP e DAP como indicadores estruturais.'
+                    'conteudo': (
+                        'A classificação do porte da copa tem aplicações diretas na gestão urbana:\n\n'
+                        '- priorização de podas e vistorias, especialmente para árvores grandes que podem representar risco em áreas adensadas;\n'
+                        '- racionalização de equipes e recursos, direcionando intervenções para locais de maior probabilidade de ocorrência de copas grandes;\n'
+                        '- apoio ao planejamento urbano, ao identificar padrões de desenvolvimento arbóreo em diferentes bairros.\n\n'
+                        'Além disso, o bom desempenho do modelo reforça a utilidade de métricas dendrométricas — especialmente CAP e DAP como indicadores estruturais.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'Os resultados sugerem que:\n\nO CAP continua sendo um forte preditor do porte da copa e se mostra adequado como variável explicativa.\n\nO modelo é tecnicamente robusto, mas seu limiar pode — e deve — ser ajustado conforme o objetivo operacional:\n\nMaior recall caso a prioridade seja não deixar árvores grandes passarem despercebidas, aumentando segurança em vias públicas.\n\nMaior precisão caso se deseje evitar inspeções desnecessárias e otimizar custos.\n\nRecomendação\n\nPara aplicações voltadas à segurança e prevenção de riscos, recomenda-se ajustar o limiar para aumentar o recall, mesmo que isso gere leve aumento nos falsos positivos.\nIsso reduz a chance de árvores grandes deixarem de ser inspecionadas, o que é crucial em áreas urbanas vulneráveis a quedas, ventos fortes e estresse ambiental.'
+                    'conteudo': (
+                        'Os resultados sugerem que:\n'
+                        '- o CAP continua sendo um forte preditor do porte da copa e se mostra adequado como variável explicativa;\n'
+                        '- o modelo é tecnicamente robusto, mas seu limiar pode — e deve — ser ajustado conforme o objetivo operacional:\n'
+                        '  • Maior recall caso a prioridade seja não deixar árvores grandes passarem despercebidas, aumentando segurança em vias públicas;\n'
+                        '  • Maior precisão caso se deseje evitar inspeções desnecessárias e otimizar custos.'
+                    )
                 }
             ]
             
@@ -1307,22 +1456,50 @@ def _render_notebook_graficos():
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'O gráfico apresenta a matriz de correlação entre três medidas dendrométricas — Altura, Copa e DAP — referentes às árvores de um bairro do Recife. Ele mostra o quanto cada par de variáveis está linearmente associado.'
+                    'conteudo': (
+                        'O gráfico apresenta a matriz de correlação entre três medidas dendrométricas — Altura, Copa e DAP — '
+                        'referentes às árvores de um bairro do Recife. Ele mostra o quanto cada par de variáveis está linearmente associado.'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'A correlação evidencia que:\n\nAltura × DAP → r = 0.75\nHá uma correlação forte, indicando que árvores mais altas tendem a apresentar troncos de maior diâmetro. Isso é esperado em árvores urbanas onde o crescimento vertical costuma acompanhar o espessamento do tronco.\n\nAltura × Copa → r = 0.48\nA relação é moderada, sugerindo que a expansão da copa não depende apenas da altura da árvore, mas também de fatores como espécie, idade, podas e limitações do ambiente urbano.\n\nCopa × DAP → r = 0.48\nTambém apresenta correlação moderada, indicando que o desenvolvimento da copa não cresce necessariamente na mesma proporção do diâmetro do tronco — novamente refletindo influência de manejo e restrições do espaço urbano.\n\nEssas correlações estão alinhadas ao comportamento esperado em áreas urbanas, onde podas e infraestrutura condicionam o crescimento natural das árvores.'
+                    'conteudo': (
+                        'A correlação evidencia que:\n\n'
+                        '- Altura × DAP → r = 0.75\n'
+                        '  Há uma correlação forte, indicando que árvores mais altas tendem a apresentar troncos de maior diâmetro. '
+                        'Isso é esperado em árvores urbanas onde o crescimento vertical costuma acompanhar o espessamento do tronco.\n\n'
+                        '- Altura × Copa → r = 0.48\n'
+                        '  A relação é moderada, sugerindo que a expansão da copa não depende apenas da altura da árvore, mas também '
+                        'de fatores como espécie, idade, podas e limitações do ambiente urbano.\n\n'
+                        '- Copa × DAP → r = 0.48\n'
+                        '  Também apresenta correlação moderada, indicando que o desenvolvimento da copa não cresce necessariamente '
+                        'na mesma proporção do diâmetro do tronco — novamente refletindo influência de manejo e restrições do espaço urbano.\n\n'
+                        'Essas correlações estão alinhadas ao comportamento esperado em áreas urbanas, onde podas e infraestrutura condicionam o crescimento natural das árvores.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'Compreender essas relações é fundamental para:\n\nplanejar podas de maneira adequada, evitando cortes excessivos em árvores que já possuem copa reduzida;\n\nprever riscos estruturais, já que troncos mais espessos (DAP maior) estão associados ao maior porte geral das árvores;\n\norientar ações de manejo e plantio, como escolha de espécies compatíveis com o espaço disponível.\n\nA correlação forte entre altura e DAP reforça que essas variáveis podem ser usadas para modelagem preditiva e estimativa de biomassa ou estabilidade da árvore.'
+                    'conteudo': (
+                        'Compreender essas relações é fundamental para:\n\n'
+                        '- planejar podas de maneira adequada, evitando cortes excessivos em árvores que já possuem copa reduzida;\n'
+                        '- prever riscos estruturais, já que troncos mais espessos (DAP maior) estão associados ao maior porte geral das árvores;\n'
+                        '- orientar ações de manejo e plantio, como escolha de espécies compatíveis com o espaço disponível.\n\n'
+                        'A correlação forte entre altura e DAP reforça que essas variáveis podem ser usadas para modelagem preditiva e estimativa de biomassa ou estabilidade das árvores.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'A análise de correlação mostra que:\n\nO DAP é uma métrica confiável para prever outras características estruturais.\n\nA copa, por ter correlação moderada, depende fortemente do manejo urbano (podas, conflitos com infraestrutura, espaço para crescimento).\n\nEssas relações ajudam a identificar onde o manejo precisa ser aprimorado e quais áreas podem ser priorizadas no planejamento de arborização.\n\nConclusão: compreender a correlação entre medidas dendrométricas permite um manejo mais eficiente, segura melhor alocação de recursos e contribui para um planejamento urbano ambientalmente mais sustentável e estrategicamente orientado.'
+                    'conteudo': (
+                        'A análise de correlação mostra que:\n'
+                        '- O DAP é uma métrica confiável para prever outras características estruturais.\n'
+                        '- A copa, por ter correlação moderada, depende fortemente do manejo urbano (podas, conflitos com infraestrutura, espaço para crescimento).\n'
+                        '- Essas relações ajudam a identificar onde o manejo precisa ser aprimorado e quais áreas podem ser priorizadas no planejamento de arborização.\n\n'
+                        'Conclusão:\n'
+                        'compreender a correlação entre medidas dendrométricas permite um manejo mais eficiente, assegura melhor alocação de recursos e contribui para um planejamento urbano ambientalmente mais sustentável e estrategicamente orientado.'
+                    )
                 }
             ]
-            
+                    
             # Usa função padronizada para renderizar análise
             _render_secoes_analise(card_body_content, secoes_analise)
         
@@ -1332,19 +1509,41 @@ def _render_notebook_graficos():
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'O gráfico mostra a relação entre a altura das árvores e a amplitude da copa em um bairro do Recife.\nA linha tracejada representa a tendência média dessa relação.'
+                    'conteudo': (
+                        'O gráfico mostra a relação entre a altura das árvores e a amplitude da copa em um bairro do Recife. '
+                        'A linha tracejada representa a tendência média dessa relação.'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'A correlação observada (r = 0.48) é moderada, indicando que:\n\nÁrvores mais altas tendem a desenvolver copas maiores, mas essa relação não é tão forte ou direta quanto a relação entre altura e DAP.\n\nA dispersão dos pontos é ampla, principalmente em árvores de médio porte, mostrando que fatores externos influenciam muito o tamanho da copa.\n\nEssa variabilidade é esperada no ambiente urbano, onde o espaço disponível, as podas, a espécie e a competição por luz influenciam fortemente o desenvolvimento lateral da copa.\n\nO ponto muito acima do padrão (copa ≈ 100 m²) sugere a presença de uma espécie excepcionalmente ampla ou um caso pontual de árvore muito desenvolvida.'
+                    'conteudo': (
+                        'A correlação observada (r = 0.48) é moderada, indicando que:\n\n'
+                        '- Árvores mais altas tendem a desenvolver copas maiores, mas essa relação não é tão forte ou direta quanto a relação entre altura e DAP.\n'
+                        '- A dispersão dos pontos é ampla, principalmente em árvores de médio porte, mostrando que fatores externos influenciam muito o tamanho da copa.\n'
+                        '- Essa variabilidade é esperada no ambiente urbano, onde o espaço disponível, as podas, a espécie e a competição por luz influenciam fortemente o desenvolvimento lateral da copa.\n'
+                        '- O ponto muito acima do padrão (copa ≈ 100 m²) sugere a presença de uma espécie excepcionalmente ampla ou um caso pontual de árvore muito desenvolvida.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'A relação entre altura e copa tem impacto direto na gestão urbana:\n\nPlanejamento de podas e controle de interferências: copas maiores têm maior probabilidade de entrar em conflito com fiação, fachadas e vias.\n\nOferta de benefícios ambientais: árvores com copas amplas oferecem mais sombra, redução de temperatura e conforto térmico.\n\nPrevisão limitada: devido à correlação moderada, a altura sozinha não é suficiente para estimar com precisão o tamanho da copa — reforçando a necessidade de medições independentes e inspeções presenciais.'
+                    'conteudo': (
+                        'A relação entre altura e copa tem impacto direto na gestão urbana:\n\n'
+                        '- planejamento de podas e controle de interferências: copas maiores têm maior probabilidade de entrar em conflito com fiação, fachadas e vias;\n'
+                        '- oferta de benefícios ambientais: árvores com copas amplas oferecem mais sombra, redução de temperatura e conforto térmico;\n'
+                        '- previsão limitada: devido à correlação moderada, a altura sozinha não é suficiente para estimar com precisão o tamanho da copa — reforçando a necessidade de medições independentes e inspeções presenciais.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'A análise indica que:\n\nA altura fornece apenas um indicador parcial do tamanho da copa.\n\nO manejo urbano precisa considerar múltiplos fatores — especialmente espécie e histórico de podas — para prever adequadamente o comportamento da copa.\n\nEstratégias de arborização devem priorizar espécies compatíveis com o espaço disponível, evitando que copas se tornem desproporcionalmente grandes em locais estreitos.\n\nA correlação moderada justifica o uso de modelos mais completos, incorporando outras variáveis dendrométricas para melhorar previsões.\n\nConclusão: A relação Altura × Copa apresenta tendência positiva, mas com grande variabilidade. Isso reforça que a gestão da arborização urbana deve ser baseada em medições específicas da copa, e não apenas em proxies como altura ou DAP.'
+                    'conteudo': (
+                        'A análise indica que:\n'
+                        '- a altura fornece apenas um indicador parcial do tamanho da copa;\n'
+                        '- o manejo urbano precisa considerar múltiplos fatores — especialmente espécie e histórico de podas — para prever adequadamente o comportamento da copa;\n'
+                        '- estratégias de arborização devem priorizar espécies compatíveis com o espaço disponível, evitando que copas se tornem desproporcionalmente grandes em locais estreitos;\n'
+                        '- a correlação moderada justifica o uso de modelos mais completos, incorporando outras variáveis dendrométricas para melhorar previsões.\n\n'
+                        'Conclusão:\n'
+                        'A relação Altura × Copa apresenta tendência positiva, mas com grande variabilidade. Isso reforça que a gestão da arborização urbana deve ser baseada em medições específicas da copa, e não apenas em proxies como altura ou DAP.'
+                    )
                 }
             ]
             
@@ -1353,23 +1552,43 @@ def _render_notebook_graficos():
         
         # Adiciona análise específica para GRAFICO_020
         if grafico_id == 'GRAFICO_021':
-            # Análise estruturada por seções
+    # Análise estruturada por seções
             secoes_analise = [
                 {
                     'titulo': 'O que o gráfico evidencia',
-                    'conteudo': 'Este gráfico apresenta a relação entre a altura das árvores e o diâmetro à altura do peito (DAP) em um bairro do Recife.\nA linha tracejada representa a tendência linear observada na amostra.'
+                    'conteudo': (
+                        'Este gráfico apresenta a relação entre a altura das árvores e o diâmetro à altura do peito (DAP) '
+                        'em um bairro do Recife.\nA linha tracejada representa a tendência linear observada na amostra.'
+                    )
                 },
                 {
                     'titulo': 'Interpretação e análise',
-                    'conteudo': 'O padrão visível no gráfico mostra uma correlação forte (r = 0.75) entre altura e DAP. Isso significa que:\n\nÁrvores mais altas tendem a ter troncos mais espessos.\n\nO crescimento vertical está fortemente associado ao crescimento radial (espessamento do tronco).\n\nEmbora exista variação natural entre espécies e condições urbanas, o alinhamento geral dos pontos confirma um padrão estrutural consistente.\n\nA dispersão crescente em alturas maiores é esperada, pois espécies diferentes atingem proporções distintas mesmo em condições urbanas semelhantes.'
+                    'conteudo': (
+                        'O padrão visível no gráfico mostra uma correlação forte (r = 0.75) entre altura e DAP. Isso significa que:\n\n'
+                        '- Árvores mais altas tendem a ter troncos mais espessos.\n'
+                        '- O crescimento vertical está fortemente associado ao crescimento radial (espessamento do tronco).\n'
+                        '- Embora exista variação natural entre espécies e condições urbanas, o alinhamento geral dos pontos confirma um padrão estrutural consistente.\n'
+                        '- A dispersão crescente em alturas maiores é esperada, pois espécies diferentes atingem proporções distintas mesmo em condições urbanas semelhantes.'
+                    )
                 },
                 {
                     'titulo': 'Impactos e relevância',
-                    'conteudo': 'Compreender essa relação é fundamental para o manejo urbano:\n\nEstimativa rápida do porte estrutural: o DAP pode ser usado como indicador confiável da altura provável de uma árvore quando medições completas não são possíveis.\n\nPlanejamento de podas e segurança: árvores com DAP elevado tendem a apresentar maior massa e exigem maior atenção em inspeções, especialmente em áreas com risco de queda.\n\nModelagem preditiva: a força da correlação justifica o uso de modelos estatísticos que utilizem o DAP para estimar biomassa, risco estrutural ou necessidade de manutenção.'
+                    'conteudo': (
+                        'Compreender essa relação é fundamental para o manejo urbano:\n\n'
+                        '- estimativa rápida do porte estrutural: o DAP pode ser usado como indicador confiável da altura provável de uma árvore quando medições completas não são possíveis;\n'
+                        '- planejamento de podas e segurança: árvores com DAP elevado tendem a apresentar maior massa e exigem maior atenção em inspeções, especialmente em áreas com risco de queda;\n'
+                        '- modelagem preditiva: a força da correlação justifica o uso de modelos estatísticos que utilizem o DAP para estimar biomassa, risco estrutural ou necessidade de manutenção.'
+                    )
                 },
                 {
                     'titulo': 'Implicações práticas e conclusões',
-                    'conteudo': 'Os resultados sugerem que o DAP é uma métrica robusta para representar o porte da árvore e apoiar decisões técnicas no contexto urbano.\n\nConclusões práticas:\n\nO DAP pode auxiliar na priorização de vistorias, concentrando esforços em árvores com maior potencial de massa e impacto urbano.\n\nA relação forte entre altura e DAP contribui para modelos de previsão de crescimento e para diagnósticos estruturais.\n\nDados dessa natureza são importantes para políticas públicas de arborização, permitindo gestão preventiva, eficiente e baseada em evidências.'
+                    'conteudo': (
+                        'Os resultados sugerem que o DAP é uma métrica robusta para representar o porte da árvore e apoiar decisões técnicas no contexto urbano.\n\n'
+                        'Conclusões práticas:\n'
+                        '- o DAP pode auxiliar na priorização de vistorias, concentrando esforços em árvores com maior potencial de massa e impacto urbano;\n'
+                        '- a relação forte entre altura e DAP contribui para modelos de previsão de crescimento e para diagnósticos estruturais;\n'
+                        '- dados dessa natureza são importantes para políticas públicas de arborização, permitindo gestão preventiva, eficiente e baseada em evidências.'
+                    )
                 }
             ]
             

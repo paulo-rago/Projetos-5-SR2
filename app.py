@@ -1027,13 +1027,33 @@ def _render_notebook_graficos():
             else:
                 max_height = '400px'  # Era 600px
         
+        # Mapeamento de IDs para títulos descritivos
+        titulos_graficos = {
+            'GRAFICO_001': 'Distribuições (Histogramas de Altura, CAP e Copa)',
+            'GRAFICO_002': 'CAP × Copa (relação entre tronco e copa)',
+            'GRAFICO_003': 'CAP × Diâmetro da Copa com regressão (tendência positiva)',
+            'GRAFICO_005': 'CAP × Diâmetro da Copa sem outliers (relação mais consistente)',
+            'GRAFICO_006': 'Avaliação dos pressupostos de regressão (Resíduos vs Preditos, Histograma, Q-Q Plot)',
+            'GRAFICO_007': 'Modelo de classificação (Matriz de Confusão, ROC, Precision-Recall)',
+            'GRAFICO_008': 'Distribuição espacial (coordenadas geográficas e projetadas)',
+            'GRAFICO_012': 'Distribuição de alturas (perfil arbóreo predominantemente jovem)',
+            'GRAFICO_014': 'Espécies mais comuns (Pau-ferro, Ipê-amarelo, etc.)',
+            'GRAFICO_015': 'Espécies com maior altura média (Sapotí-do-mangue, Palmeira-imperial, etc.)',
+            'GRAFICO_019': 'Matriz de correlação (Altura, Copa, DAP)',
+            'GRAFICO_020': 'Altura × Copa (r = 0.48) — correlação moderada',
+            'GRAFICO_021': 'Altura × DAP (r = 0.75) — correlação forte'
+        }
+        
+        # Título do gráfico (usa mapeamento se disponível, senão mantém o ID)
+        titulo_grafico = titulos_graficos.get(grafico_id, grafico_id)
+        
         # Conteúdo do card
         card_content = []
         
-        # Header com ID do gráfico
+        # Header com título descritivo do gráfico
         card_content.append(
             dbc.CardHeader([
-                html.H6(grafico_id, className="m-0", style={'fontWeight': '600', 'fontSize': '0.95rem'})
+                html.H6(titulo_grafico, className="m-0", style={'fontWeight': '600', 'fontSize': '0.95rem'})
             ], style={'background': 'white', 'borderBottom': f'1px solid {COLORS["border"]}', 'padding': '1rem'})
         )
         
